@@ -3,6 +3,7 @@
 
 
 
+	hdc1080 sensor;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -12,7 +13,9 @@ void setup() {
 
 	Wire.begin();
 
-	hdc1080_init();
+	sensor = hdc1080();
+	sensor.reset();
+	sensor.init();
 }
 
 // the loop function runs over and over again forever
@@ -45,7 +48,7 @@ void loop() {
 /////////////////////////
 
 
-	float *sensor_array = hdc1080_get_sensor_data();
+	float *sensor_array = sensor.get_sensor_data();
 
 
 	Serial.print("temp");

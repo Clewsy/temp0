@@ -19,8 +19,23 @@
 #define HDC1080_CONFIG_BIT_H_RES_MSB	1	//Upper config byte; i.e. bit 9.
 #define HDC1080_CONFIG_BIT_H_RES_LSB	0	//Upper config byte; i.e. bit 8.
 
+#define HDC1080_SENSE_DELAY 10
 
+/*
 void hdc1080_reset(void);
 void hdc1080_init(void);
 void hdc1080_trigger_sensor(void);
 float * hdc1080_get_sensor_data(void);
+*/
+
+class hdc1080
+{
+	public:
+		hdc1080();
+		void reset();
+		void init();
+		float * get_sensor_data();
+	
+//	private:
+//		static float data[2];
+};
