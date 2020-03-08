@@ -1,135 +1,76 @@
 #include "hdc1080.h"
 
-//#include <Wire.h>
-/*
-void hdc1080_reset(void)
+hdc1080::hdc1080(void)
 {
-	Wire.beginTransmission(HDC1080_I2C_ADDRESS);
-	Wire.write(HDC1080_ADDRESS_CONF);
-	Wire.write(1 << HDC1080_CONFIG_BIT_RESET);
-	Wire.write(0x00);
-	Wire.endTransmission(HDC1080_I2C_ADDRESS);
+	Wire.begin();	//Communicating with the hdc1080 requires I2C.
 }
 
-void hdc1080_init(void)
-{
-	hdc1080_reset();
-
-	Wire.beginTransmission(HDC1080_I2C_ADDRESS);
-	Wire.write(HDC1080_ADDRESS_CONF);
-	Wire.write(	(1 << HDC1080_CONFIG_BIT_MODE) |
-			(1 << HDC1080_CONFIG_BIT_T_RES) |
-			(1 << HDC1080_CONFIG_BIT_H_RES_MSB) );
-//	Wire.write(0b00010110);
-	Wire.write(0x00);
-	Wire.endTransmission(HDC1080_I2C_ADDRESS);
-
-}
-
-void hdc1080_trigger_sensor(void)
-{
-	Wire.beginTransmission(HDC1080_I2C_ADDRESS);
-	Wire.write(HDC1080_ADDRESS_TRIG);
-	Wire.endTransmission(HDC1080_I2C_ADDRESS);
-}
-
-float * hdc1080_get_sensor_data(void)
-{
-	hdc1080_trigger_sensor();
-	delay(20);
-
-	static float data[2];					//Address of array remains static.
-
-	Wire.requestFrom(HDC1080_I2C_ADDRESS, 4);
-	uint8_t temp_msb = Wire.read();
-	uint8_t temp_lsb = Wire.read();
-	uint8_t humi_msb = Wire.read();
-	uint8_t humi_lsb = Wire.read();
-
-	uint16_t temp_data = ( (temp_msb << 8) | temp_lsb);
-	float temp = ((float)temp_data);
-	temp=temp*165;
-	temp= (temp / 65536);
-	temp = (temp-40);
-
-	uint16_t humi_data = ( (humi_msb << 8) | humi_lsb);
-	float humi = ((float)humi_data);
-	humi = humi * 100;
-	humi = humi / 65536;
-
-	data[0] = temp;
-	data[1] = humi;
-
-	return data;						//Returns address of array "data".
-
-}*/
-
-
-
-hdc1080::hdc1080(void) {}
-
+//Trigger a soft reset of the hdc1080.
 void hdc1080::reset(void)
 {
+	//Begin an I2C transmission to I2C address of the hdc1080.
 	Wire.beginTransmission(HDC1080_I2C_ADDRESS);
+
+	//Write the address of the configuration register.
 	Wire.write(HDC1080_ADDRESS_CONF);
-	Wire.write(1 << HDC1080_CONFIG_BIT_RESET);
+
+	//Write the desired configuration bits - config register high byte.
+	Wire.write(1 << HDC1080_CONFIG_BIT_RESET);	//Set the hdc1080 reset bit.  Will automatically reset.
+
+	//Config register has a low byte which is not used but expected.  Write all zeros.
 	Wire.write(0x00);
+
+	//Signal the end of the I2C transmission.
 	Wire.endTransmission(HDC1080_I2C_ADDRESS);
 }
 
+//Initialise the hdc1080.
 void hdc1080::init(void)
 {
+	//Begin an I2C transmission to I2C address of the hdc1080.
 	Wire.beginTransmission(HDC1080_I2C_ADDRESS);
+
+	//Write the address of the configuration register.
 	Wire.write(HDC1080_ADDRESS_CONF);
-	Wire.write(	(1 << HDC1080_CONFIG_BIT_MODE) |
-			(1 << HDC1080_CONFIG_BIT_T_RES) |
-			(1 << HDC1080_CONFIG_BIT_H_RES_MSB) );
-//	Wire.write(0b00010110);
+
+	//Write the desired configuration bits - config register high byte.
+	Wire.write(	(1 << HDC1080_CONFIG_BIT_MODE) |	//Set mode to transmit temperature and humidity data together.
+			(1 << HDC1080_CONFIG_BIT_T_RES) |	//Set temperature resolution to 11 bit.
+			(1 << HDC1080_CONFIG_BIT_H_RES_MSB) );	//Set humidity resolution to 8 bit.
+
+	//Config register has a low byte which is not used but expected.  Write all zeros.
 	Wire.write(0x00);
+
+	//Signal the end of the I2C transmission.
 	Wire.endTransmission(HDC1080_I2C_ADDRESS);
 }
 
-/*
-void hdc1080::trigger_sensor(void)
-{
-	Wire.beginTransmission(HDC1080_I2C_ADDRESS);
-	Wire.write(HDC1080_ADDRESS_TRIG);
-	Wire.endTransmission(HDC1080_I2C_ADDRESS);
-	delay(HDC1080_SENSE_DELAY);
-}
-*/
-
+//Get the temperature and humidity readings from the hdc1080.
 float * hdc1080::get_sensor_data(void)
 {
-
+	//Trigger an update of the temerature and humidity readings in the hdc1080.
 	Wire.beginTransmission(HDC1080_I2C_ADDRESS);
 	Wire.write(HDC1080_ADDRESS_TRIG);
 	Wire.endTransmission(HDC1080_I2C_ADDRESS);
+
+	//Wait long enough for the hdc1080 to update the sensor data.
 	delay(HDC1080_SENSE_DELAY);
 
+	//Read the raw sensor data from the hdc1080.
+	Wire.requestFrom(HDC1080_I2C_ADDRESS, 4);	//Provide I2C address, and requested number of bytes to read.
+	temp_data = ( Wire.read() << 8);		//Raw temperature data high byte.
+	temp_data |= Wire.read();			//Raw temperature data low byte.
+	humi_data = ( Wire.read() << 8);		//Raw humidity data high byte.
+	humi_data |= Wire.read();			//Raw humidity data low byte.
 
-	static float data[2];					//Address of array remains static.
+	//Convert the raw data into human readable values.
+	temp = (((((float)temp_data)*165)/65536)-40);	//Convert float from the raw data: temp = (((temp_data / 2^16) * 165°C) - 40°C)
+	humi = ((((float)humi_data)*100)/65536);	//Convert float from the raw data: humi = ((humi_data / 2^16) * 100%RH)
 
-	Wire.requestFrom(HDC1080_I2C_ADDRESS, 4);
-	uint8_t temp_msb = Wire.read();
-	uint8_t temp_lsb = Wire.read();
-	uint8_t humi_msb = Wire.read();
-	uint8_t humi_lsb = Wire.read();
+	//Copy the converted sensor data to the relevant data array elements. 
+	data[TEMPERATURE] = temp;
+	data[HUMIDITY] = humi;
 
-	uint16_t temp_data = ( (temp_msb << 8) | temp_lsb);
-	float temp = ((float)temp_data);
-	temp=temp*165;
-	temp= (temp / 65536);
-	temp = (temp-40);
-
-	uint16_t humi_data = ( (humi_msb << 8) | humi_lsb);
-	float humi = ((float)humi_data);
-	humi = humi * 100;
-	humi = humi / 65536;
-
-	data[0] = temp;
-	data[1] = humi;
-
-	return data;						//Returns address of array "data".
-
+	//Return the address of the "data" array.
+	return data;
 }

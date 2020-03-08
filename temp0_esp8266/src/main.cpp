@@ -15,13 +15,8 @@ const char* password = STAPSK;
 
 ESP8266WebServer server(80);
 
-void handle_root() {
-	server.send(200, "text/plain", "temp0!");
-}
-
-
 String get_temp() {
-	Serial.find("temp");
+	Serial.find("t");
 	String temp = Serial.readStringUntil(';');
 	if(temp == "") {
 		temp = "error";
@@ -29,9 +24,51 @@ String get_temp() {
 	return temp;
 }
 
+String get_humi() {
+	Serial.find("h");
+	String humi = Serial.readStringUntil(';');
+	if(humi == "") {
+		humi = "error";
+	}
+	return humi;
+}
+
 void handle_temp() {
 	server.send(200, "text/plain", get_temp());
 }
+
+void handle_humi() {
+	server.send(200, "text/plain", get_humi());
+}
+
+void handle_root() {
+	String page = "<html>\n";
+	page += "<head>\n";
+	page += "<title>temp0</title>\n";
+	page += "<style>\n";
+	page += "body {	background-color: rgb(50,50,50);\n"; 
+	page += "	font-family: monospace;\n";
+	page += "	font-size: 48px;\n";
+	page += "	text-align: center;\n";
+	page += "	background-color: rgb(50,50,50);\n";
+	page += "	font-weight: bold; }\n";
+	page += "h1 {	color: rgb(150,150,150);\n";
+	page += "	font-size: 96px; }\n";
+	page += "</style>\n";
+	page += "</head>\n";
+	page += "<body>\n";
+	page += "<h1>temp0</h1>\n";
+	page += "<p>Temperature: ";
+	page += get_temp();
+	page += "&degC</p>\n";
+	page += "<p>Humidity: ";
+	page += get_humi();
+	page += "%</p>\n";
+	page += "</body>\n";
+
+	server.send(200, "text/html", page);
+}
+
 
 void handle_not_found() {
 	String message = "File Not Found\n\n";
@@ -52,18 +89,11 @@ void setup(void) {
 	Serial.begin(115200);
 	WiFi.mode(WIFI_STA);
 	WiFi.begin(ssid, password);
-	Serial.println("");
 
 	// Wait for connection
 	while (WiFi.status() != WL_CONNECTED) {
 		delay(500);
-		Serial.print(".");
 	}
-	Serial.println("");
-	Serial.print("Connected to ");
-	Serial.println(ssid);
-	Serial.print("IP address: ");
-	Serial.println(WiFi.localIP());
 
 	if (MDNS.begin("esp8266")) {
 		Serial.println("MDNS responder started");
@@ -71,11 +101,13 @@ void setup(void) {
 
 	server.on("/", handle_root);
 
+	server.on("/t", handle_temp);
 	server.on("/temp", handle_temp);
+	server.on("/temperature", handle_temp);
 
-	server.on("/inline", []() {
-		server.send(200, "text/plain", "this works as well");
-	});
+	server.on("/h", handle_humi);
+	server.on("/humi", handle_humi);
+	server.on("/humidity", handle_humi);
 
 	server.on("/gif", []() {
 		static const uint8_t gif[] PROGMEM = {
