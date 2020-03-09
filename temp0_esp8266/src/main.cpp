@@ -41,11 +41,6 @@ void handle_humi() {
 	server.send(200, "text/plain", get_humi());
 }
 
-
-//void handle_favicon() {
-//	server.send(200, "text/html", "<link rel='icon' href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAS0lEQVR42s2SMQ4AIAjE+P+ncSYdasgNXMJgcyIIlVKPIKdvioAXyWBeJmVpqRZKWtj9QWAKZyWll50b8IcL9JUeQF50n28ckyb0ADG8RLwp05YBAAAAAElFTkSuQmCC' type='image/x-png' />");
-//}
-
 void handle_root() {
 	String page = "<!DOCTYPE html>\n"; 
 	page += "<html>\n";
@@ -70,22 +65,26 @@ void handle_root() {
 	page += "<style>\n";
 	page += "body {	background-color: rgb(50,50,50);\n"; 
 	page += "	font-family: monospace;\n";
-	page += "	font-size: 48px;\n";
 	page += "	text-align: center;\n";
 	page += "	background-color: rgb(50,50,50);\n";
+	page += "	color: rgb(150,150,150);\n";
 	page += "	font-weight: bold; }\n";
-	page += "h1 {	color: rgb(150,150,150);\n";
-	page += "	font-size: 96px; }\n";
+	page += "h1 {	font-size: 96px; }\n";
+	page += "h2 {	height: 50px;\n";
+	page += "	margin: 40px 0px 0px 0px;\n";
+	page += "	font-size: 48px; }\n";
+	page += "h3 {	height: 50px;\n";
+	page += "	color: black;\n";
+	page += "	margin: 0px 0px 0px 0px;\n";
+	page += "	font-size: 48px; }\n";
 	page += "</style>\n";
 	page += "</head>\n";
 	page += "<body>\n";
 	page += "<h1>temp0</h1>\n";
-	page += "<p>Temperature: ";
-	page += get_temp();
-	page += "&deg;C</p>\n";
-	page += "<p>Humidity: ";
-	page += get_humi();
-	page += "%</p>\n";
+	page += "<h2>Temperature</h2>\n";
+	page += "<h3>" + get_temp() + "&deg;C</h3>\n";
+	page += "<h2>Humidity</h2>\n";
+	page += "<h3>" + get_humi() + "%</h3>\n";
 	page += "</body>\n";
 	page += "</html>\n";
 
@@ -131,25 +130,6 @@ void setup(void) {
 	server.on("/h", handle_humi);
 	server.on("/humi", handle_humi);
 	server.on("/humidity", handle_humi);
-
-//	server.on("/favicon.ico", handle_favicon);
-
-	server.on("/gif", []() {
-		static const uint8_t gif[] PROGMEM = {
-			0x47, 0x49, 0x46, 0x38, 0x37, 0x61, 0x10, 0x00, 0x10, 0x00, 0x80, 0x01,
-			0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0x2c, 0x00, 0x00, 0x00, 0x00,
-			0x10, 0x00, 0x10, 0x00, 0x00, 0x02, 0x19, 0x8c, 0x8f, 0xa9, 0xcb, 0x9d,
-			0x00, 0x5f, 0x74, 0xb4, 0x56, 0xb0, 0xb0, 0xd2, 0xf2, 0x35, 0x1e, 0x4c,
-			0x0c, 0x24, 0x5a, 0xe6, 0x89, 0xa6, 0x4d, 0x01, 0x00, 0x3b
-		};
-		char gif_colored[sizeof(gif)];
-		memcpy_P(gif_colored, gif, sizeof(gif));
-		// Set the background to a random set of colors
-		gif_colored[16] = millis() % 256;
-		gif_colored[17] = millis() % 256;
-		gif_colored[18] = millis() % 256;
-		server.send(200, "image/gif", gif_colored, sizeof(gif_colored));
-	});
 
 	server.onNotFound(handle_not_found);
 
