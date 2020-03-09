@@ -41,9 +41,31 @@ void handle_humi() {
 	server.send(200, "text/plain", get_humi());
 }
 
+
+//void handle_favicon() {
+//	server.send(200, "text/html", "<link rel='icon' href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAS0lEQVR42s2SMQ4AIAjE+P+ncSYdasgNXMJgcyIIlVKPIKdvioAXyWBeJmVpqRZKWtj9QWAKZyWll50b8IcL9JUeQF50n28ckyb0ADG8RLwp05YBAAAAAElFTkSuQmCC' type='image/x-png' />");
+//}
+
 void handle_root() {
-	String page = "<html>\n";
+	String page = "<!DOCTYPE html>\n"; 
+	page += "<html>\n";
 	page += "<head>\n";
+	page += "<link rel='icon' href='data:image/png;base64,";
+	page += "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QA/wD/AP+gvaeTAAACqklE";
+	page += "QVR4nO2byW4TQRCGv3hJciACBDeWO1JuPAKJWAQigsADkCMJm1+AIwHlLUC8CViRgxMgGClckkhw";
+	page += "BBFAYjMcqlpjWV5i1FOFrf6kVqtrqjV//Z7pGdszkEhYMwHcAqrAF21VYEm3jTTHgXXgT5e2rjkj";
+	page += "ySSwgRS6A1wFprTNAW/JTBjJI+E2UmADONxh+yEyE5YMdZmxihR3uUfOFc2pmigyZg8pbqpHzkHN";
+	page += "+WyiyJiw0MXKi0LBakf/K8kAbwHeJAO8BXjjacB5YFfbBUcdZrRf3nZbYjs98nJlzGpHZEWNtY3b";
+	page += "tbTn5UpaA7wFeJMM8BbgTTLAW4A3yQBvAd4kA7wFeJMM8BbgTTLAW4A3yQBvAd4kA7wFeJMM8Bbg";
+	page += "TTLAW4A3yQBvAd4kA7wFeJMMMNrP/X+Y8yC2CC9WkD88fwCVlnj7U6KBCvBTYytGGnPjHNBEip/R";
+	page += "WAlY0HgovqmxkubMIiY0gbOGeqNSBraRAu9q7Cjwgu7PCq8BRzS3orFtMmOGiktIAVvIWlNCCuxW";
+	page += "fGg1zS0A7zR20Vh7FJ4i4u/oeIH+xYd2Q+fc0/ETM9UReYmIP63jGvs3YFXnnNLxhpnqiHxCxIcn";
+	page += "w7+xfwO+6pxJHX/MS2Se9wFF7X9p/3uAuWHOuPa56czTgPfan9D+zQBzQ+5J7T9EUdSBPA1Y035W";
+	page += "+8cDzA2LXphbi6LImOvI+fsKOR0mgDr9z/86cugXgU2NzRtrj8I42XX8psaO0duEuuaAvFkW7iPK";
+	page += "ZqojE16B+Q6c0dg4sAg8R94i2QOeaSwsejPI7XO/V2yGgkdkJiySXR06UUQ++VD8cu7qDCgAD8kO";
+	page += "89fId4Np4IC2aeSub7Mlb5kR+71iDjmf+y2CW4zAYd+NMnANuSQ2yNaAhsbmGeIFLzGM/AVYSNm1";
+	page += "OH1mOwAAAABJRU5ErkJggg==' ";
+	page += "type='image/x-png' />\n";
 	page += "<title>temp0</title>\n";
 	page += "<style>\n";
 	page += "body {	background-color: rgb(50,50,50);\n"; 
@@ -60,11 +82,12 @@ void handle_root() {
 	page += "<h1>temp0</h1>\n";
 	page += "<p>Temperature: ";
 	page += get_temp();
-	page += "&degC</p>\n";
+	page += "&deg;C</p>\n";
 	page += "<p>Humidity: ";
 	page += get_humi();
 	page += "%</p>\n";
 	page += "</body>\n";
+	page += "</html>\n";
 
 	server.send(200, "text/html", page);
 }
@@ -108,6 +131,8 @@ void setup(void) {
 	server.on("/h", handle_humi);
 	server.on("/humi", handle_humi);
 	server.on("/humidity", handle_humi);
+
+//	server.on("/favicon.ico", handle_favicon);
 
 	server.on("/gif", []() {
 		static const uint8_t gif[] PROGMEM = {
