@@ -1,47 +1,36 @@
-#include <ESP8266WiFi.h>
-#include <WiFiClient.h>
-#include <ESP8266WebServer.h>
-#include <ESP8266mDNS.h>
+#include "temp0.h"
 
-#include "credentials.h"
-
-#ifndef STASSID
-#define STASSID "your-ssid"
-#define STAPSK  "your-password"
-#endif
-
-const char* ssid = STASSID;
-const char* password = STAPSK;
-
+//Initiate an esp8266 webserver called "server".
 ESP8266WebServer server(80);
 
-String get_temp() {
-	Serial.find("t");
+//Parse the temperature value from the serial string.
+String get_temp()
+{
+	Serial.find('t');
 	String temp = Serial.readStringUntil(';');
-	if(temp == "") {
-		temp = "error";
-	}
+	if(temp == "") { temp = "error"; }
 	return temp;
 }
 
-String get_humi() {
-	Serial.find("h");
+//Parse the humidity value from the serial string.
+String get_humi()
+{
+	Serial.find('h');
 	String humi = Serial.readStringUntil(';');
-	if(humi == "") {
-		humi = "error";
-	}
+	if(humi == "") { humi = "error"; }
 	return humi;
 }
 
-void handle_temp() {
-	server.send(200, "text/plain", get_temp());
-}
+//Just print the temperature value string.
+void handle_temp() { server.send(200, "text/plain", get_temp()); }
 
-void handle_humi() {
-	server.send(200, "text/plain", get_humi());
-}
+//Just print the humidity value string.
+void handle_humi() { server.send(200, "text/plain", get_humi()); }
 
-void handle_root() {
+//Print a pretty page showing temperature and humidity.  
+//The large block is a base64 encoded png file to serve as a favicon.
+void handle_root()
+{
 	String page = "<!DOCTYPE html>\n"; 
 	page += "<html>\n";
 	page += "<head>\n";
@@ -91,8 +80,9 @@ void handle_root() {
 	server.send(200, "text/html", page);
 }
 
-
-void handle_not_found() {
+//Basic default page output.
+void handle_not_found()
+{
 	String message = "File Not Found\n\n";
 	message += "URI: ";
 	message += server.uri();
@@ -101,26 +91,32 @@ void handle_not_found() {
 	message += "\nArguments: ";
 	message += server.args();
 	message += "\n";
-	for (uint8_t i = 0; i < server.args(); i++) {
+	for (uint8_t i = 0; i < server.args(); i++)
+	{
 		message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
 	}
 	server.send(404, "text/plain", message);
 }
 
-void setup(void) {
+//System initialisation.
+void setup(void)
+{
+	//Initialise credential strings.
+	const char* ssid = STASSID;
+	const char* password = STAPSK;
+
+	//Initialise uart.
 	Serial.begin(115200);
+
+	//Initialise wifi station.
+	WiFi.hostname(HOSTNAME);
 	WiFi.mode(WIFI_STA);
 	WiFi.begin(ssid, password);
 
 	// Wait for connection
-	while (WiFi.status() != WL_CONNECTED) {
-		delay(500);
-	}
+	while (WiFi.status() != WL_CONNECTED) { delay(500); }
 
-	if (MDNS.begin("esp8266")) {
-		Serial.println("MDNS responder started");
-	}
-
+	//Define functions to call depending on full url address.
 	server.on("/", handle_root);
 
 	server.on("/t", handle_temp);
@@ -133,11 +129,12 @@ void setup(void) {
 
 	server.onNotFound(handle_not_found);
 
+	//Initialise wifi web server.
 	server.begin();
-	Serial.println("HTTP server started");
 }
 
-void loop(void) {
+void loop(void)
+{
 	server.handleClient();
 	MDNS.update();
 }
