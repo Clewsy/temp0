@@ -57,7 +57,7 @@ float * hdc1080::get_sensor_data(void)
 	delay(HDC1080_SENSE_DELAY);
 
 	//Read the raw sensor data from the hdc1080.
-	Wire.requestFrom(HDC1080_I2C_ADDRESS, 4);	//Provide I2C address, and requested number of bytes to read.
+	Wire.requestFrom(HDC1080_I2C_ADDRESS, 4, true);	//Provide I2C address, and requested number of bytes to read.
 	temp_data = ( Wire.read() << 8);		//Raw temperature data high byte.
 	temp_data |= Wire.read();			//Raw temperature data low byte.
 	humi_data = ( Wire.read() << 8);		//Raw humidity data high byte.
