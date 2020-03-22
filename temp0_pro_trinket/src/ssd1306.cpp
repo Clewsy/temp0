@@ -115,37 +115,6 @@ void ssd1306::init(void)
 	send_command(OLED_ON);									//Turn display on.
 }
 
-
-
-//void ssd1306::print_char(unsigned char character, uint8_t start_page, uint8_t start_column)
-//{
-//	set_address(start_page, start_column);
-//	for(uint8_t i=0; i<6; i++)					//Cycle through each of the 6 segments that make up the character.
-//	{
-//		send_data(pgm_read_byte(&(font_6x8[character-32][i])));	//Send the data that corresponds to the segments defined in the font.
-//	}								//Note "-32" is required to map the decimal value of <char> to the defined font.
-//}									//The font character map starts with ' ' (space) at 0 which is offset by 32 to
-// 									//match the standard ascii set.
-//void ssd1306::print_string(unsigned char *string, uint8_t start_page, uint8_t start_column)
-//{
-//
-//	uint8_t c = 0;
-//	while(string[c])
-//	{
-//		print_char(string[c], start_page, (start_column+(c*6)));
-//		c++;
-//	} 
-//}
-//
-//void ssd1306::print_double(double number, uint8_t start_page, uint8_t start_column)
-//{
-//	char buffer[5];
-//	dtostrf(number, 4, 2, buffer);	//Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
-//	print_string((unsigned char *) buffer, start_page, start_column);
-//}
-
-
-
 void ssd1306::print_large_char(unsigned char character, uint8_t start_page, uint8_t start_column)
 {
 	for(uint8_t p=0; p<2; p++)							//Characters span two pages.
@@ -188,25 +157,3 @@ void ssd1306::test_pattern(void)
 		}
 	}
 }
-
-//void ssd1306::print_digit_large(uint8_t digit, uint8_t start_page, uint8_t start_column)
-//{
-//	for(uint8_t p=0; p<6; p++)	//Each digit spans 6 pages.
-//	{
-//		set_address((start_page+p), start_column);
-//		for(uint8_t c=0; c<24; c++)		//Each digit spans 24 columns.
-//		{
-//			send_data(pgm_read_byte(&(font_7_seg_digits[digit][c+(24*p)])));
-//		}
-//	}
-//}
-//
-//void ssd1306::print_digit_array_large(uint8_t *digit, uint8_t start_page, uint8_t start_column)
-//{
-//	uint8_t d = 0;
-//	while(digit[d] != 13)
-//	{
-//		print_digit_large(digit[d], start_page, (start_column+(d*24)));
-//		d++;
-//	} 
-//}

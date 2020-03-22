@@ -63,16 +63,10 @@ class ssd1306
 		void send_data(uint8_t data);
 		void clear_screen(void);
 		void draw_box(uint8_t start_page, uint8_t start_column, uint8_t height, uint8_t width);
-//		void print_char(unsigned char character, uint8_t start_page, uint8_t start_column);
-//		void print_string(unsigned char * string, uint8_t start_page, uint8_t start_column);
-//		void print_double(double number, uint8_t start_page, uint8_t start_column);
 		void print_large_char(unsigned char character, uint8_t start_page, uint8_t start_column);
 		void print_large_string(unsigned char *string, uint8_t start_page, uint8_t start_column);
 		void print_large_double(double number, uint8_t start_page, uint8_t start_column);
 		void test_pattern(void);
-//		void print_digit_large(uint8_t digit, uint8_t start_page, uint8_t start_column);
-//		void print_digit_array_large(uint8_t *digit, uint8_t start_page, uint8_t start_column);
-//		void print_string(String string);
 	private:
 		void set_page(uint8_t page);
 		void set_column(uint8_t column);
