@@ -20,6 +20,7 @@ void setup() {
 
 
 ////////////////splash
+	display.test_pattern();
 	for (uint8_t page=0;page<8;page++)
 	{
 		display.send_command(page);
@@ -27,46 +28,52 @@ void setup() {
 		{
 			display.send_command((col&0b1111), ((col>>4)+0b10000));
 			display.set_address(page, col);
-			display.send_data(0b11001100);
-	//		display.send_data(0b00001111);
+			display.send_data(0b00001111);
 		}
 	}
 
-	delay(1000);
+	delay(300);
 	display.clear_screen();
 
 	display.draw_box(0, 0, 8, 128);
 	display.draw_box(1, 16, 6, 96);
 	display.draw_box(2, 32, 4, 64);
-	display.draw_box(3, 48, 2, 32);
+
+	display.print_large_string((unsigned char *) "temp0", 3, 43);
+
+	delay(4000);
+	display.clear_screen();
+
 ////////////////end splash
 
 
 }
-uint8_t c = 0;
-void loop() {
 
-	digitalWrite(LED_BUILTIN, HIGH);	// turn the LED on (HIGH is the voltage level)
-	display.send_command(OLED_CONTRAST, 255);
+void loop()
+{
 
-	delay(500);				// wait for a second
+//	digitalWrite(LED_BUILTIN, HIGH);
+//	delay(500);
+//	digitalWrite(LED_BUILTIN, LOW);
+	delay(500);
 
-	digitalWrite(LED_BUILTIN, LOW);		// turn the LED off by making the voltage LOW
-	display.send_command(OLED_CONTRAST, 127);
-
-
-	delay(500);				// wait for 200ms.
-
-
-
-	float *sensor_array = sensor.get_sensor_data();
+	double *sensor_array = sensor.get_sensor_data();
 
 	Serial.print("t");
 	Serial.print(sensor_array[TEMPERATURE]);
-//	Serial.print(sensor.read_config_register());
 	Serial.print(";");
 	Serial.print("h");
 	Serial.print(sensor_array[HUMIDITY]);
 	Serial.print(";");
+
+	display.print_large_string((unsigned char *)"Temperature", 0, 0);
+	display.print_large_double(sensor_array[TEMPERATURE], 2, 0);
+	display.print_large_char(176, 2, 39);
+	display.print_large_char('C', 2, 47);
+	
+	display.print_large_double(sensor_array[HUMIDITY], 4, 79);
+	display.print_large_char('%', 4, 119);
+	display.print_large_string((unsigned char *)"Humidity", 6, 63);
+
 }
 

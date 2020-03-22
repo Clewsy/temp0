@@ -2,6 +2,8 @@
 #include <Arduino.h>
 #include <Wire.h>	//Needed for I2C communication.
 
+#include "ssd1306_fonts.h"
+
 
 #define OLED_ADDR			0b0111100	//i2c address of the OLED SSD1306 driver module.
 
@@ -12,7 +14,7 @@
 //SSD1306 command bytes.
 //Fundamental Commands:
 #define OLED_CONTRAST			0x81	//Set the contract.  Following command byte defines contrast value from 0 (low) to 255 (high). (0x7F default).
-	#define OLED_DEFAULT_CONTRAST	0x7F	//I.e 127 - half way.
+	#define OLED_DEFAULT_CONTRAST	0xFF	//Range from 0x00 (dimest) to 0xFF (brightest).
 #define OLED_ALL_ON_RESUME		0xA4	//Turn on all pixels.
 #define OLED_ALL_ON			0xA5	//Disable "OLED_ALL_ON" (i.e. resume previous graphical output).
 #define OLED_INVERSE_DISABLE		0xA6	//Normal mode.
@@ -61,6 +63,16 @@ class ssd1306
 		void send_data(uint8_t data);
 		void clear_screen(void);
 		void draw_box(uint8_t start_page, uint8_t start_column, uint8_t height, uint8_t width);
+//		void print_char(unsigned char character, uint8_t start_page, uint8_t start_column);
+//		void print_string(unsigned char * string, uint8_t start_page, uint8_t start_column);
+//		void print_double(double number, uint8_t start_page, uint8_t start_column);
+		void print_large_char(unsigned char character, uint8_t start_page, uint8_t start_column);
+		void print_large_string(unsigned char *string, uint8_t start_page, uint8_t start_column);
+		void print_large_double(double number, uint8_t start_page, uint8_t start_column);
+		void test_pattern(void);
+//		void print_digit_large(uint8_t digit, uint8_t start_page, uint8_t start_column);
+//		void print_digit_array_large(uint8_t *digit, uint8_t start_page, uint8_t start_column);
+//		void print_string(String string);
 	private:
 		void set_page(uint8_t page);
 		void set_column(uint8_t column);
