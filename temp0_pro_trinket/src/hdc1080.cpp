@@ -10,13 +10,13 @@ hdc1080::hdc1080(void)
 uint8_t hdc1080::read_config_register(void)
 {
 	Wire.beginTransmission(HDC1080_I2C_ADDRESS);
-	Wire.write(HDC1080_ADDRESS_CONF);
+	Wire.write(HDC1080_ADDRESS_CONF);		//Tell the HDC1080 which register we want to read.
 	Wire.endTransmission(HDC1080_I2C_ADDRESS);
 
 	//Read the raw sensor data from the hdc1080.
 	Wire.requestFrom(HDC1080_I2C_ADDRESS, 2, true);	//Provide I2C address, and requested number of bytes to read.
-	uint8_t config_data = Wire.read();
-	Wire.read();
+	uint8_t config_data = Wire.read();		//Read in the current config data byte.
+	Wire.read();					//HDC1080 config register is 16 bytes, but lower byte is reserved (all zeros) so ignore.
 
 	return config_data;
 }
@@ -78,25 +78,21 @@ float * hdc1080::get_sensor_data(void)
 	return data;
 }
 
-
+//Run the internal heater for a specified duraion in seconds (approximately).
 void hdc1080::run_heater(uint8_t seconds)
 {
 	uint8_t reg = read_config_register();		//Set reg to current value of the config register.
 	reg = (reg | (1 << HDC1080_CONFIG_BIT_HEAT));	//Set reg to include heater enable bit.
 	set_config_register(reg);			//Set the config register to the value of reg.
 
-	//Heater only runs when in measurement mode so simulate for requested duration:
+	//Heater only runs when in measurement mode so simulate for requested duration (approx timing):
 	for (uint16_t i=0; i<(seconds*100); i++)
 	{
 		Wire.beginTransmission(HDC1080_I2C_ADDRESS);
 		Wire.write(HDC1080_ADDRESS_TRIG);
 		Wire.endTransmission(HDC1080_I2C_ADDRESS);
-	
-		//Wait long enough for the hdc1080 to update the sensor data.
 		delay(10);
-	
-		//Read the raw sensor data from the hdc1080.
-		Wire.requestFrom(HDC1080_I2C_ADDRESS, 4, true);	//Provide I2C address, and requested number of bytes to read.
+		Wire.requestFrom(HDC1080_I2C_ADDRESS, 4, true);
 		for (uint8_t j=0; j<5; j++) { Wire.read(); }
 	}
 
