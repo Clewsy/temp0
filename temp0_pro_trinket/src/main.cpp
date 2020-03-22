@@ -13,8 +13,7 @@ void setup() {
 	sensor = hdc1080();
 	sensor.reset();
 	sensor.init();
-
-
+	sensor.run_heater(1);
 
 	display = ssd1306();
 	display.init();
@@ -50,13 +49,13 @@ void loop() {
 	digitalWrite(LED_BUILTIN, HIGH);	// turn the LED on (HIGH is the voltage level)
 	display.send_command(OLED_CONTRAST, 255);
 
-	delay(1000);				// wait for a second
+	delay(500);				// wait for a second
 
 	digitalWrite(LED_BUILTIN, LOW);		// turn the LED off by making the voltage LOW
 	display.send_command(OLED_CONTRAST, 127);
 
 
-	delay(1000);				// wait for 200ms.
+	delay(500);				// wait for 200ms.
 
 
 
@@ -64,6 +63,7 @@ void loop() {
 
 	Serial.print("t");
 	Serial.print(sensor_array[TEMPERATURE]);
+//	Serial.print(sensor.read_config_register());
 	Serial.print(";");
 	Serial.print("h");
 	Serial.print(sensor_array[HUMIDITY]);

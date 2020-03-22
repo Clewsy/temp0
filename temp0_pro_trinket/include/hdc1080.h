@@ -19,21 +19,24 @@
 #define HDC1080_CONFIG_BIT_H_RES_MSB	1	//Upper config byte; i.e. bit 9.
 #define HDC1080_CONFIG_BIT_H_RES_LSB	0	//Upper config byte; i.e. bit 8.
 
-#define HDC1080_SENSE_DELAY 10	//Delay (in ms) to wait after triggering an update of hdc1080 sensor data, before reading in the data.
+#define HDC1080_SENSE_DELAY 20	//Delay (in ms) to wait after triggering an update of hdc1080 sensor data, before reading in the data.
 
 //Define class for an hdc1080 temperature/humidity sensor.
 class hdc1080
 {
 	public:
-		hdc1080();			//To initialise an hdc1080 sensor.
-		void reset();			//Send a reset signal to the hdc1080.
-		void init();			//Initialise an hdc1080.
-		float * get_sensor_data();	//Get the temperature and humidty readings from an hdc1080.
+		hdc1080(void);				//To initialise an hdc1080 sensor.
+		void reset(void);			//Send a reset signal to the hdc1080.
+		void init(void);			//Initialise an hdc1080.
+		float * get_sensor_data(void);		//Get the temperature and humidty readings from an hdc1080.
+		void run_heater(uint8_t seconds);
 	
 	private:
-		float data[2];		//Array with two elements that will contain floats temp and humi.
-		uint16_t temp_data;	//The raw temperature data from the hdc1080.
-		uint16_t humi_data;	//The raw humidity data from the hdc1080.
-		float temp;		//The temperature calculated from temp_data.
-		float humi;		//The humidity calculated from humi_data.
+		float data[2];				//Array with two elements that will contain floats temp and humi.
+		uint16_t temp_data;			//The raw temperature data from the hdc1080.
+		uint16_t humi_data;			//The raw humidity data from the hdc1080.
+		float temp;				//The temperature calculated from temp_data.
+		float humi;				//The humidity calculated from humi_data.
+		uint8_t read_config_register(void);	//Returns 8-bits representing current state of the config register.
+		void set_config_register(uint8_t reg);	//Write 8-bits to the configuration register (upper byte of 16-bits).
 };
