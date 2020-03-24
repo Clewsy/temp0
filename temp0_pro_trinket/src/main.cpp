@@ -1,46 +1,57 @@
 //#include <Arduino.h>
 #include "temp0.h"
 
-void setup() {
+//Interrupr sub-routine that is triggered by pressing the push-button.
+void ISR_button(void)
+{
+	if( ((millis() - trigger_time) > BUTTON_DEBOUNCE) && (digitalRead(BUTTON_PIN)==LOW))	//Button debounce.
+	{
+		mode++;										//Increment to the next mode.
+		if(mode>MODE_WEIRD) {mode=MODE_NORMAL;}
+		trigger_time = millis();							//Reset the button debounce timer.
+	}
+}
 
-	// initialize digital pin LED_BUILTIN as an output.
+void setup(void) {
+
+	//Initialize digital pin LED_BUILTIN as an output.
 	pinMode(LED_BUILTIN, OUTPUT);
 
 	//Initialise UART at 115200baud.
 	Serial.begin(115200);
 
-	//Initialise sensor using the hdc1080 library.
+	//Initialise sensor using the hdc1080 header and functions.
 	sensor = hdc1080();
 	sensor.reset();
 	sensor.init();
 
+	//Initialise oled using the ssd1306 header and functions.
 	display = ssd1306();
 	display.init();
 
 
-////////////////splash
+	////////////////Splash Screen Animation
 	display.test_pattern();
-
 	delay(300);
 	display.clear_screen();
-
 	display.draw_box(0, 0, 8, 128);
 	display.draw_box(1, 16, 6, 96);
 	display.draw_box(2, 32, 4, 64);
-
 	display.print_large_string((unsigned char *) "temp0", 3, 43);
-////////////////end splash
+	////////////////End Splash Screen Animation
 
-	sensor.run_heater(5);	//Run heater while the splash screen is displayed.
+	//Run heater while the splash screen is displayed.
+	sensor.run_heater(5);
 	display.clear_screen();
+
+	//After all other initialisations zre complete, enable the push-button interrupt.
+	pinMode(BUTTON_PIN, INPUT_PULLUP);
+	attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISR_button, LOW);
 }
 
-void loop()
+void loop(void)
 {
-//	digitalWrite(LED_BUILTIN, HIGH);
-//	delay(500);
-//	digitalWrite(LED_BUILTIN, LOW);
-	delay(500);
+	digitalWrite(LED_BUILTIN, mode);
 
 	double *sensor_array = sensor.get_sensor_data();
 
