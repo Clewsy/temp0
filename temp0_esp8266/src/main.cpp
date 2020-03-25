@@ -3,29 +3,29 @@
 //Initiate an esp8266 webserver called "server".
 ESP8266WebServer server(80);
 
-//Parse the temperature value from the serial string.
+//Parse the temperature value (in plain text) from the serial string.
 String get_temp()
 {
-	Serial.find('t');
-	String temp = Serial.readStringUntil(';');
-	if(temp == "") { temp = "error"; }
+	Serial.find('t');				//Character 't' indicates beginning of the serial string indicating the temperature value.
+	String temp = Serial.readStringUntil(';');	//Character ';' indicates end of the temp string.
+	if(temp == "")	{ temp = "error"; }		//Will print "error" if the esp8266 is not receiving the serial string.
 	return temp;
 }
 
-//Parse the humidity value from the serial string.
+//Parse the humidity value (in plain text) from the serial string.
 String get_humi()
 {
-	Serial.find('h');
-	String humi = Serial.readStringUntil(';');
-	if(humi == "") { humi = "error"; }
+	Serial.find('h');				//Character 'h' indicates beginning of the serial string indicating the humidity value.
+	String humi = Serial.readStringUntil(';');	//Character ';' indicates end of the humi string.
+	if(humi == "")	{ humi = "error"; }		//Will print "error" if the esp8266 is not receiving the serial string.
 	return humi;
 }
 
-//Just print the temperature value string.
-void handle_temp() { server.send(200, "text/plain", get_temp()); }
+//Just print in plain text the temperature value string (succeeded by a newline character).
+void handle_temp() { server.send(200, "text/plain", (get_temp() + '\n')); }
 
-//Just print the humidity value string.
-void handle_humi() { server.send(200, "text/plain", get_humi()); }
+//Just print in plain text the humidity value string (succeeded by a newline character).
+void handle_humi() { server.send(200, "text/plain", (get_humi() + '\n')); }
 
 //Print a pretty page showing temperature and humidity.  
 //The large block is a base64 encoded png file to serve as a favicon.
@@ -52,28 +52,49 @@ void handle_root()
 	page += "type='image/x-png' />\n";
 	page += "<title>temp0</title>\n";
 	page += "<style>\n";
-	page += "body {	background-color: rgb(50,50,50);\n"; 
-	page += "	font-family: monospace;\n";
-	page += "	text-align: center;\n";
-	page += "	background-color: rgb(50,50,50);\n";
-	page += "	color: rgb(150,150,150);\n";
-	page += "	font-weight: bold; }\n";
-	page += "h1 {	font-size: 96px; }\n";
-	page += "h2 {	height: 50px;\n";
-	page += "	margin: 40px 0px 0px 0px;\n";
-	page += "	font-size: 48px; }\n";
-	page += "h3 {	height: 50px;\n";
-	page += "	color: black;\n";
-	page += "	margin: 0px 0px 0px 0px;\n";
-	page += "	font-size: 48px; }\n";
+	page += "	body {\n";
+	page += "		background-color: rgb(50,50,50);\n";
+	page += "		font-family: monospace;\n";
+	page += "		text-align: center;\n";
+	page += "		color: rgb(150,150,150);\n";
+	page += "		font-weight: bold; }\n";
+	page += "	h1 {\n";
+	page += "		font-size: 96px;\n";
+	page += "		margin: 0px 0px 0px 0px;}\n";
+	page += "	h2 {\n";
+	page += "		font-size: 48px;\n";
+	page += "		margin: 0px 0px 0px 0px;\n";
+	page += "		height: 50px;}\n";
+	page += "	h3 {\n";
+	page += "			font-size: 48px;\n";
+	page += "		height: 50px;\n";
+	page += "		margin: 0px 0px 0px 0px;\n";
+	page += "		color: black;}\n";
+	page += "	div.header {\n";
+	page += "		margin: 0px;}\n";
+	page += "	div.sensor {\n";
+	page += "		text-align: center;\n";
+	page += "		margin: 20px auto auto auto;\n";
+	page += "		padding: 10px;\n";
+	page += "		border-color: black;\n";
+	page += "		border-style: solid;\n";
+	page += "		border-radius: 50px;\n";
+	page += "		border-width: 10px;\n";
+	page += "		width: 350px;}\n";
 	page += "</style>\n";
 	page += "</head>\n";
 	page += "<body>\n";
-	page += "<h1>temp0</h1>\n";
-	page += "<h2>Temperature</h2>\n";
-	page += "<h3>" + get_temp() + "&deg;C</h3>\n";
-	page += "<h2>Humidity</h2>\n";
-	page += "<h3>" + get_humi() + "%</h3>\n";
+	page += "	<div class=\"header\">\n";
+	page += "		<h1>temp0</h1>\n";
+	page += "	</div>\n";
+	page += "	<div class=\"sensor\">\n";
+	page += "		<h2>Temperature</h2>\n";
+	page += "		<h3>" + get_temp() + "&deg;C</h3>\n";
+	page += "	</div>\n";
+	page += "	<div class=\"sensor\">\n";
+	page += "		<h2>Humidity</h2>\n";
+	page += "		<h3>" + get_humi() + "%</h3>\n";
+	page += "	</div>\n";
 	page += "</body>\n";
 	page += "</html>\n";
 
