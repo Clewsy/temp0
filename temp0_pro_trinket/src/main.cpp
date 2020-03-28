@@ -38,25 +38,21 @@ void update_oled (double temp, double humi)
 	switch(mode)
 	{
 		case MODE_NORMAL:
-			display.print_large_string((unsigned char *)"Temperature", 0, 0);
-			display.print_large_double(temp, 2, 0);
-			display.print_large_char(176, 2, 39);
-			display.print_large_char('C', 2, 47);
+			display.print_string((unsigned char *)"Temperature", 0, 0);
+			display.print_double(temp, 2, 0);
+			display.print_char(176, 2, 39);
+			display.print_char('C', 2, 47);
 
-			display.print_large_double(humi, 4, 79);
-			display.print_large_char('%', 4, 119);
-			display.print_large_string((unsigned char *)"Humidity", 6, 63);
+			display.print_double(humi, 4, 79);
+			display.print_char('%', 4, 119);
+			display.print_string((unsigned char *)"Humidity", 6, 63);
 			break;
 
 		case MODE_WEIRD:
-			display.print_large_string((unsigned char *)"Temperature", 0, 0);
-			display.print_large_double(temp, 2, 0);
-			display.print_large_char(176, 2, 39);
-			display.print_large_char('C', 2, 47);
-
+			display.print_large_double(temp, 0, 0);
+			display.print_large_char(LARGE_CHAR_INDEX_DEG, 0, 96);
 			display.print_large_double(humi, 4, 0);
-			display.print_large_char('%', 4, 40);
-			display.print_large_string((unsigned char *)"Humidity", 6, 0);
+			display.print_large_char('%', 4, 96);
 			break;
 	}
 }
@@ -90,7 +86,7 @@ void setup(void) {
 	display.draw_box(0, 0, 8, 128);
 	display.draw_box(1, 16, 6, 96);
 	display.draw_box(2, 32, 4, 64);
-	display.print_large_string((unsigned char *) "temp0", 3, 43);
+	display.print_string((unsigned char *) "temp0", 3, 43);
 	//////////////// End Splash Screen Animation
 
 	// Run heater while the splash screen is displayed.
