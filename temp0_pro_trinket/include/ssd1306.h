@@ -66,11 +66,11 @@ class ssd1306
 		void print_char(unsigned char character, uint8_t start_page, uint8_t start_column);
 		void print_string(unsigned char *string, uint8_t start_page, uint8_t start_column);
 		void print_double(double number, uint8_t start_page, uint8_t start_column);
-		void test_pattern(void);
-
 		void print_large_char(unsigned char character, uint8_t start_page, uint8_t start_column);
 		void print_large_string(unsigned char *string, uint8_t start_page, uint8_t start_column);
 		void print_large_double(double number, uint8_t start_page, uint8_t start_column);
+		void test_pattern(void);
+
 
 	private:
 		void set_page(uint8_t page);

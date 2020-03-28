@@ -5,7 +5,7 @@
 
 //Define values for various modes.
 #define MODE_NORMAL	0
-#define MODE_WEIRD	1
+#define MODE_LARGE	1
 
 #define BUTTON_PIN	3	//Allocate push-button hardware input pin.  For Pro-Trinket, pin 3 is the only option for hardware interrupt capability.
 #define BUTTON_DEBOUNCE	20	//Duration in milliseconds to register a press of the button.

@@ -157,6 +157,7 @@ void ssd1306::print_large_char(unsigned char character, uint8_t start_page, uint
 		}									//Note "-32" is required to map the decimal value of <char> to the defined font.
 	}
 }
+
 void ssd1306::print_large_string(unsigned char *string, uint8_t start_page, uint8_t start_column)
 {
 	uint8_t c = 0;
@@ -169,15 +170,11 @@ void ssd1306::print_large_string(unsigned char *string, uint8_t start_page, uint
 
 void ssd1306::print_large_double(double number, uint8_t start_page, uint8_t start_column)
 {
-	char buffer[4];					//Clip the last digit (hudredths).
+	char buffer[5];					//Clip the last digit (hudredths).
 	dtostrf(number, 4, 1, buffer);			//Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
 
 	print_large_string((unsigned char *) buffer, start_page, start_column);
 }
-
-
-
-
 
 void ssd1306::test_pattern(void)
 {

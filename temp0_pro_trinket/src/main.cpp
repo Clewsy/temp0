@@ -6,7 +6,7 @@ void ISR_button(void)
 	if( ((millis() - trigger_time) > BUTTON_DEBOUNCE) && (digitalRead(BUTTON_PIN)==LOW))	//Button debounce.
 	{
 		mode++;										//Increment to the next mode.
-		if(mode>MODE_WEIRD) {mode=MODE_NORMAL;}
+		if(mode>MODE_LARGE) {mode=MODE_NORMAL;}
 		trigger_time = millis();							//Reset the button debounce timer.
 	}
 }
@@ -48,11 +48,12 @@ void update_oled (double temp, double humi)
 			display.print_string((unsigned char *)"Humidity", 6, 63);
 			break;
 
-		case MODE_WEIRD:
+		case MODE_LARGE:
 			display.print_large_double(temp, 0, 0);
 			display.print_large_char(LARGE_CHAR_INDEX_DEG, 0, 96);
+
 			display.print_large_double(humi, 4, 0);
-			display.print_large_char('%', 4, 96);
+			display.print_large_char('%', 4, 100);
 			break;
 	}
 }
@@ -104,7 +105,7 @@ void setup(void) {
 void loop(void)
 {
 
-	digitalWrite(LED_EXTERNAL, mode);
+	digitalWrite(LED_EXTERNAL, !mode);
 
 	double *sensor_array = sensor.get_sensor_data();		// Update temperature and humidity readings.
 
