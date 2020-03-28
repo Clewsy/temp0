@@ -10,9 +10,12 @@
 #define BUTTON_PIN	3	//Allocate push-button hardware input pin.  For Pro-Trinket, pin 3 is the only option for hardware interrupt capability.
 #define BUTTON_DEBOUNCE	20	//Duration in milliseconds to register a press of the button.
 
+#define LED_EXTERNAL	6	//LED connected to this pin.
+
 //Global variables
 hdc1080 sensor;			//Initialise an hdc1080 sensor called "sensor".  Refer "hdc1080.h".
 ssd1306 display;		//Initialise an oled display with ssd1306 driver called "display".  Refer "ssd1306.h"
 
-uint8_t mode = MODE_NORMAL;	//Initialise the "start-up" mode.
-long trigger_time = 0;		//Initialise the timer comparator for debouncing a button press.
+uint8_t mode = MODE_NORMAL;		//Initialise the "start-up" mode.
+uint8_t last_mode = MODE_NORMAL;	//Initialise "last_mode" - needed to determine if mode has changed.
+long trigger_time = 0;			//Initialise the timer comparator for debouncing a button press.
