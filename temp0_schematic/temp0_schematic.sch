@@ -1,4 +1,5 @@
 EESchema Schematic File Version 4
+LIBS:temp0_schematic-cache
 EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
@@ -38,12 +39,12 @@ $EndComp
 $Comp
 L Switch:SW_Push RST1
 U 1 1 5E8093DC
-P 4250 4450
-F 0 "RST1" H 4250 4400 50  0000 C CNN
-F 1 "SW_Push" H 4250 4644 50  0000 C CNN
-F 2 "Button_Switch_SMD:SW_Push_1P1T_NO_6x6mm_H9.5mm" H 4250 4650 50  0001 C CNN
-F 3 "~" H 4250 4650 50  0001 C CNN
-	1    4250 4450
+P 4300 4450
+F 0 "RST1" H 4300 4400 50  0000 C CNN
+F 1 "SW_Push" H 4300 4644 50  0000 C CNN
+F 2 "Button_Switch_SMD:SW_Push_1P1T_NO_6x6mm_H9.5mm" H 4300 4650 50  0001 C CNN
+F 3 "~" H 4300 4650 50  0001 C CNN
+	1    4300 4450
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -286,12 +287,12 @@ U1_RX
 $Comp
 L power:GND #PWR0104
 U 1 1 5E850B36
-P 3550 4550
-F 0 "#PWR0104" H 3550 4300 50  0001 C CNN
-F 1 "GND" H 3555 4377 50  0000 C CNN
-F 2 "" H 3550 4550 50  0001 C CNN
-F 3 "" H 3550 4550 50  0001 C CNN
-	1    3550 4550
+P 3550 4700
+F 0 "#PWR0104" H 3550 4450 50  0001 C CNN
+F 1 "GND" H 3555 4527 50  0000 C CNN
+F 2 "" H 3550 4700 50  0001 C CNN
+F 3 "" H 3550 4700 50  0001 C CNN
+	1    3550 4700
 	1    0    0    -1  
 $EndComp
 Text GLabel 6300 4350 2    50   Input ~ 0
@@ -362,27 +363,14 @@ Wire Wire Line
 $Comp
 L Switch:SW_Push MODE1
 U 1 1 5E85CBA8
-P 3850 4150
-F 0 "MODE1" H 3850 4100 50  0000 C CNN
-F 1 "SW_Push" H 3850 4344 50  0000 C CNN
-F 2 "Button_Switch_SMD:SW_Push_1P1T_NO_6x6mm_H9.5mm" H 3850 4350 50  0001 C CNN
-F 3 "~" H 3850 4350 50  0001 C CNN
-	1    3850 4150
+P 3800 4150
+F 0 "MODE1" H 3800 4100 50  0000 C CNN
+F 1 "SW_Push" H 3800 4344 50  0000 C CNN
+F 2 "Button_Switch_SMD:SW_Push_1P1T_NO_6x6mm_H9.5mm" H 3800 4350 50  0001 C CNN
+F 3 "~" H 3800 4350 50  0001 C CNN
+	1    3800 4150
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	4050 4450 3550 4450
-Wire Wire Line
-	3550 4450 3550 4550
-Wire Wire Line
-	3650 4150 3550 4150
-Wire Wire Line
-	3550 4150 3550 4450
-Connection ~ 3550 4450
-Wire Wire Line
-	4900 4450 4450 4450
-Wire Wire Line
-	4900 4150 4050 4150
 Wire Wire Line
 	4900 4250 4800 4250
 Wire Wire Line
@@ -402,15 +390,6 @@ F 3 "~" H 4650 3850 50  0001 C CNN
 	1    4650 3850
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	4900 3850 4800 3850
-Wire Wire Line
-	4500 3850 4400 3850
-Wire Wire Line
-	4100 3850 3550 3850
-Wire Wire Line
-	3550 3850 3550 4150
-Connection ~ 3550 4150
 $Comp
 L Device:R R1
 U 1 1 5E817521
@@ -427,9 +406,6 @@ NoConn ~ 4900 3650
 NoConn ~ 4900 3350
 Wire Wire Line
 	4900 3450 3550 3450
-Wire Wire Line
-	3550 3450 3550 3850
-Connection ~ 3550 3850
 NoConn ~ 4900 3950
 NoConn ~ 4900 4050
 NoConn ~ 6200 4250
@@ -442,4 +418,56 @@ NoConn ~ 6200 3650
 NoConn ~ 6200 3550
 NoConn ~ 6200 3450
 NoConn ~ 6200 3350
+$Comp
+L Connector:Conn_01x02_Male J1
+U 1 1 5E8088A4
+P 3750 4500
+F 0 "J1" V 3800 4550 50  0000 C CNN
+F 1 "MODE1_EXT" V 3700 4450 50  0000 C CNN
+F 2 "Connector_PinHeader_1.27mm:PinHeader_1x02_P1.27mm_Horizontal" H 3750 4500 50  0001 C CNN
+F 3 "~" H 3750 4500 50  0001 C CNN
+	1    3750 4500
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	3850 4300 4050 4300
+Wire Wire Line
+	4050 4300 4050 4150
+Wire Wire Line
+	4050 4150 4000 4150
+Wire Wire Line
+	3600 4150 3550 4150
+Wire Wire Line
+	3550 4150 3550 4300
+Wire Wire Line
+	3550 4300 3750 4300
+Wire Wire Line
+	3550 4150 3550 3850
+Connection ~ 3550 4150
+Wire Wire Line
+	3550 4700 3550 4650
+Connection ~ 3550 4300
+Wire Wire Line
+	4050 4150 4900 4150
+Connection ~ 4050 4150
+Wire Wire Line
+	4900 3850 4800 3850
+Wire Wire Line
+	4500 3850 4400 3850
+Wire Wire Line
+	4100 3850 3550 3850
+Connection ~ 3550 3850
+Wire Wire Line
+	3550 3850 3550 3450
+Wire Wire Line
+	4100 4450 4050 4450
+Wire Wire Line
+	4050 4450 4050 4650
+Wire Wire Line
+	4050 4650 3550 4650
+Connection ~ 3550 4650
+Wire Wire Line
+	3550 4650 3550 4300
+Wire Wire Line
+	4500 4450 4900 4450
 $EndSCHEMATC
