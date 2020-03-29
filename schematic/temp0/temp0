@@ -1,6 +1,0 @@
-"Source:","/home/jc/projects/temp0/schematic/temp0/temp0.sch"
-"Date:","Sat 14 Mar 2020 16:57:06 AEDT"
-"Tool:","Eeschema 5.1.4+dfsg1-1"
-"Component Count:","1"
-"Ref","Value","Footprint","Datasheet","Manufacturer","Vendor"
-"U1","pro_trinket_5V","temp0_parts:pro_trinket_5V","","",""

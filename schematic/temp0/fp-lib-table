@@ -1,5 +1,0 @@
-(fp_lib_table
-  (lib (name ProTrinket)(type KiCad)(uri ${KIPRJMOD}/temp0/schematic/temp0/parts/TrinketPro.mod)(options "")(descr ""))
-  (lib (name temp0)(type KiCad)(uri ${KIPRJMOD}/temp0/schematic/temp0.pretty)(options "")(descr ""))
-  (lib (name temp0_parts)(type KiCad)(uri ${KIPRJMOD}/temp0_parts.pretty)(options "")(descr ""))
-)
