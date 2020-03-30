@@ -424,7 +424,7 @@ U 1 1 5E8088A4
 P 3750 4500
 F 0 "J1" V 3800 4550 50  0000 C CNN
 F 1 "MODE1_EXT" V 3700 4450 50  0000 C CNN
-F 2 "Connector_PinHeader_1.27mm:PinHeader_1x02_P1.27mm_Horizontal" H 3750 4500 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Horizontal" H 3750 4500 50  0001 C CNN
 F 3 "~" H 3750 4500 50  0001 C CNN
 	1    3750 4500
 	0    -1   -1   0   
@@ -470,4 +470,44 @@ Wire Wire Line
 	3550 4650 3550 4300
 Wire Wire Line
 	4500 4450 4900 4450
+Text GLabel 2050 3850 3    50   Input ~ 0
+U1_RX
+Text GLabel 1950 3850 3    50   Input ~ 0
+U1_TX
+Text GLabel 1850 3850 3    50   Input ~ 0
+3.3V
+$Comp
+L power:GND #PWR0107
+U 1 1 5E81FDC4
+P 1650 4050
+F 0 "#PWR0107" H 1650 3800 50  0001 C CNN
+F 1 "GND" H 1655 3877 50  0000 C CNN
+F 2 "" H 1650 4050 50  0001 C CNN
+F 3 "" H 1650 4050 50  0001 C CNN
+	1    1650 4050
+	1    0    0    -1  
+$EndComp
+NoConn ~ 2150 3750
+NoConn ~ 1750 3750
+Wire Wire Line
+	1650 4050 1650 3750
+Wire Wire Line
+	1850 3750 1850 3850
+Wire Wire Line
+	1950 3850 1950 3750
+Wire Wire Line
+	2050 3750 2050 3850
+Text Notes 750  4450 0    50   ~ 0
+Note: FTDI Header will only work for serial comms to ESP-01\n(Tx/Rx are reversed relative to Pro Trinket)
+$Comp
+L temp0_parts:ftdi_header U6
+U 1 1 5E82DE8D
+P 1900 3500
+F 0 "U6" H 1850 3600 50  0000 L CNN
+F 1 "ftdi_header" H 1700 3700 50  0000 L CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Horizontal" H 1900 3400 50  0001 C CNN
+F 3 "" H 1900 3400 50  0001 C CNN
+	1    1900 3500
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
