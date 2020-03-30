@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/jc/projects/temp0/temp0_schematic/temp0_schematic.sch)
-    (date "Sun 29 Mar 2020 20:15:33 AEDT")
+    (date "Mon 30 Mar 2020 15:53:22 AEDT")
     (tool "Eeschema 5.1.4+dfsg1-1")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
