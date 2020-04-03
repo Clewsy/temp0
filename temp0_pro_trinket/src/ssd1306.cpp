@@ -109,7 +109,8 @@ void ssd1306::init(void)
 	send_command(OLED_ALL_ON_RESUME);							//Disable entire display on.
 	send_command(OLED_INVERSE_DISABLE);							//Set Normal display (i.e. not inverse).
 	send_command(OLED_SET_DISPLAY_CLOCK, OLED_DEFAULT_DISPLAY_CLOCK);			//Set Osc frequency.
-	send_command(OLED_SET_PRECHARGE_PERIOD, OLED_DEFAULT_PRECHARGE_PERIOD);			//Enable charge pump regulator.
+	send_command(OLED_SET_CHARGE_PUMP, OLED_DEFAULT_SET_CHARGE_PUMP);			//Enable charge pump regulator.
+	send_command(OLED_SET_PRECHARGE_PERIOD, OLED_DEFAULT_PRECHARGE_PERIOD);			//Set charge pump pre-charge period.
 	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_DEFAULT_MEMORY_ADDRESSING_MODE);	//Set memory addressing mode to Page Addressing Mode.
 	clear_screen();										//Clear any remnant screen memory from last run.
 	send_command(OLED_ON);									//Turn display on.

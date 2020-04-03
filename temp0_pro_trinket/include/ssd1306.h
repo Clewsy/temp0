@@ -5,7 +5,9 @@
 #include "ssd1306_fonts.h"
 
 
-#define OLED_ADDR			0b0111100	//i2c address of the OLED SSD1306 driver module.
+//#define OLED_ADDR			0b0111100	//i2c address of the OLED SSD1306 driver module.
+//#define OLED_ADDR			0b1111000	//i2c address of the OLED SSD1306 driver module.
+#define OLED_ADDR			0x3C	//i2c address of the OLED SSD1306 driver module.
 
 #define OLED_CONTROL_BYTE_COMMAND 	0b10000000	//Control byte - indicates that the next byte will be a command.
 #define OLED_CONTROL_BYTE_DATA		0b11000000	//Control byte - indicates that the next byte will be "data" (i.e. graphical data).
@@ -36,11 +38,13 @@
 //Timing and Driving Scheme Commands
 #define OLED_SET_DISPLAY_CLOCK				0xD5	//Set the clock divide ratio/oscillator frequency.  Next byte [7-4] osc freq, [3-0] divide ratio (n +1). 
 	#define OLED_DEFAULT_DISPLAY_CLOCK		0x80	//I.e. default settings osc freq 0b10000, divide ratio 1.
+#define OLED_SET_CHARGE_PUMP				0x8D	//Enable or disable inetrnal charge pump regulator with the next byte.
+	#define OLED_DEFAULT_SET_CHARGE_PUMP		0x14	//Enable by default - 0x14.  (To disable, use 0x10 to disable).
 #define OLED_SET_PRECHARGE_PERIOD			0xD9	//Set pre-charge period with next byte.  Default is 0b10000000 = 0x80
 	#define OLED_DEFAULT_PRECHARGE_PERIOD		0x22	//I.e. Phase 1 period 0x2, phase 2 period 0x2.
 #define OLED_SET_VCOMH_DESELECT_LEVEL			0xDB	//Set Vcomh deselect voltage level with next byte (default 0b00100000 = 0x20).
 	#define OLED_DEFAULT_VCOMH_DESELECT_LEVEL	0x20	//I.e. ~0.77xVcc.
-#define OLED_NO_OP					0cE3	//Command for no operation.
+#define OLED_NO_OP					0xE3	//Command for no operation.
 //Addressing Setting Commands
 #define OLED_SET_MEMORY_ADDRESSING_MODE			0x20	//Set mode of addressing oled pixel data with next byte (default is 0b10 for page mode).
 	#define OLED_DEFAULT_MEMORY_ADDRESSING_MODE	0x02	//I.e Page addressing mode.
