@@ -26,7 +26,20 @@ void ssd1306::send_command(uint8_t command, uint8_t value)
 	Wire.endTransmission(OLED_ADDR);
 }
 
-//Send a data byute - i.e. 8-bits to set/clear the 8 pixels at the current address.
+//Send a command to oled driver - single command followed by two command value.
+void ssd1306::send_command(uint8_t command, uint8_t value1, uint8_t value2)
+{
+	Wire.beginTransmission(OLED_ADDR);
+	Wire.write(OLED_CONTROL_BYTE_COMMAND);
+	Wire.write(command);
+	Wire.write(OLED_CONTROL_BYTE_COMMAND);
+	Wire.write(value1);
+	Wire.write(OLED_CONTROL_BYTE_COMMAND);
+	Wire.write(value2);
+	Wire.endTransmission(OLED_ADDR);
+}
+
+//Send a data byte - i.e. 8-bits to set/clear the 8 pixels at the current address.
 void ssd1306::send_data(uint8_t data)
 {
 	Wire.beginTransmission(OLED_ADDR);
@@ -58,14 +71,21 @@ void ssd1306::set_address(uint8_t page, uint8_t column)
 //Write all zeros to oled data to clear all pixels.
 void ssd1306::clear_screen(void)
 {
-	for (uint8_t page=0; page<8; page++)		//Cycle through all 8 pages.
+	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_HORIZONTAL);	//Temporarily set memory addressing mode to Horizontal Mode.
+	send_command(OLED_ADDRESS_PAGE, 0, 7);								//Set page address range.
+	send_command(OLED_ADDRESS_COLUMN, 0, 127);							//Set column address range.
+	
+	for (uint8_t i=0; i<64; i++)	//Can send packets of maximum 16 bytes at a time.  Therefore need to repeat 64 times for all segments.
 	{
-		set_address(page, 0);			//Column starts at zero and increments with every data write.
-		for (uint8_t col=0; col<128; col++)	//Cycle through all 128 columns.
+		Wire.beginTransmission(OLED_ADDR);
+		Wire.write(OLED_CONTROL_BYTE_BULK_DATA);
+		for (uint8_t j=0; j<16; j++)
 		{
-			send_data(0x00);		//Send all zeros to clear.
+			Wire.write(0x00);			//Segment index increases every write.
 		}
+		Wire.endTransmission(OLED_ADDR);
 	}
+	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		//Reset memory addressing mode back to Page Mode.
 }
 
 //Draw a box with top left corner at upper pixel of [start page] and column [start_column],
@@ -109,8 +129,10 @@ void ssd1306::init(void)
 	send_command(OLED_SET_MULTIPLEX_RATIO, OLED_SET_MULTIPLEX_RATIO_DEFAULT);			//Set MUX ratio.
 	send_command(OLED_SET_DISPLAY_OFFSET, OLED_SET_DISPLAY_OFFSET_DEFAULT);				//Set display offset.
 	send_command(OLED_SET_DISPLAY_START_LINE);							//Set display start line.
-	send_command(OLED_SET_SEGMENT_REMAP_COL0);							//Set segment re-map.
-	send_command(OLED_SET_COM_OUTPUT_SCAN_DIR_NORMAL);						//Set COM output scan direction.
+	send_command(OLED_SET_SEGMENT_REMAP_COL0);							//Set segment re-map.  COL 0 is default.
+//	send_command(OLED_SET_SEGMENT_REMAP_COL127);							//Set segment re-map.  COL 0 is default.
+	send_command(OLED_SET_COM_OUTPUT_SCAN_DIR_NORMAL);						//Set COM output scan direction.  Normal is default.
+//	send_command(OLED_SET_COM_OUTPUT_SCAN_DIR_REVERSE);						//Set COM output scan direction.  Normal is default.
 	send_command(OLED_SET_COM_PINS_HARDWARE_CONFIG, OLED_SET_COM_PINS_HARDWARE_CONFIG_DEFAULT);	//Set COM pins hardware configuration.
 	send_command(OLED_SET_CONTRAST, OLED_SET_CONTRAST_DEFAULT);					//Set contrast control.
 	send_command(OLED_ALL_ON_RESUME);								//Disable entire display on.
@@ -192,14 +214,22 @@ void ssd1306::print_large_double(double number, uint8_t start_page, uint8_t star
 //Print a test patter to the display.
 void ssd1306::test_pattern(void)
 {
-	for (uint8_t page=0;page<8;page++)
+
+
+	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_HORIZONTAL);	//Temporarily set memory addressing mode to Horizontal Mode.
+	send_command(OLED_ADDRESS_PAGE, 0, 7);								//Set page address range.
+	send_command(OLED_ADDRESS_COLUMN, 0, 127);							//Set column address range.
+	
+	for (uint8_t i=0; i<64; i++)	//Can send packets of maximum 16 bytes at a time.  Therefore need to repeat 64 times for all segments.
 	{
-		send_command(page);
-		for (uint8_t col=0;col<128;col++)
+		Wire.beginTransmission(OLED_ADDR);
+		Wire.write(OLED_CONTROL_BYTE_BULK_DATA);
+		for (uint8_t j=0; j<16; j++)
 		{
-			send_command((col&0b1111), ((col>>4)+0b10000));
-			set_address(page, col);
-			send_data(0b11110000);
+			Wire.write(0b11110000);			//Segment index increases every write.
 		}
+		Wire.endTransmission(OLED_ADDR);
+		delay(10);
 	}
+	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		//Reset memory addressing mode back to Page Mode.
 }

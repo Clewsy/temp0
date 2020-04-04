@@ -5,12 +5,13 @@
 #define OLED_ADDR			0b0111100	//i2c address of the OLED SSD1306 driver module.
 #define OLED_CONTROL_BYTE_COMMAND 	0b10000000	//Control byte - indicates that the next byte will be a command.
 #define OLED_CONTROL_BYTE_DATA		0b11000000	//Control byte - indicates that the next byte will be "data" (i.e. graphical data).
-#define OLED_CONTROL_BYTE_BULK_DATA	0b00000000	//Control byte - indicates that the transmission will contain only data bytes.
+#define OLED_CONTROL_BYTE_BULK_DATA	0b01000000	//Control byte - indicates that the transmission will contain only data bytes.
 
 //SSD1306 command bytes.
 //Fundamental Commands:
 #define OLED_SET_CONTRAST				0x81	//Set the contract.  Following command byte defines contrast value from 0 (low) to 255 (high). (0x7F default).
-#define OLED_SET_CONTRAST_DEFAULT			0xFF	//Range from 0x00 (dimest) to 0xFF (brightest).
+#define OLED_SET_CONTRAST_DEFAULT			0x7F	//Range from 0x00 (dimest) to 0xFF (brightest).
+#define OLED_SET_CONTRAST_BRIGHT			0xFF	//Highest contrast (brightest).
 #define OLED_ALL_ON_RESUME				0xA4	//Turn on all pixels.
 #define OLED_ALL_ON					0xA5	//Disable "OLED_ALL_ON" (i.e. resume previous graphical output).
 #define OLED_INVERSE_DISABLE				0xA6	//Normal mode.
@@ -42,9 +43,12 @@
 //Addressing Setting Commands
 #define OLED_SET_MEMORY_ADDRESSING_MODE			0x20	//Set mode of addressing oled pixel data with next byte (default is 0b10 for page mode).
 #define OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT		0x02	//I.e Page addressing mode.
-#define OLED_ADDRESS_FIRST_COLUMN_LOWER			0x00	//Command to set lower nibble of column address to first column.  Add lower nibble of column 0 to 127.
-#define OLED_ADDRESS_FIRST_COLUMN_HIGHER		0x10	//Command to set higher nibble of column address to first column.  Or with higher nibble of column 0 to 127.
-#define OLED_ADDRESS_FIRST_PAGE				0xB0	//Command to set address to first page.  Or with 0 to 7 to set address to pages 0 to 7.
+#define OLED_SET_MEMORY_ADDRESSING_MODE_HORIZONTAL	0x00	//Horizontal addressing mode automnatically rolls index down through pages.
+#define OLED_ADDRESS_FIRST_COLUMN_LOWER			0x00	//(Page Mode Only) Command to set lower nibble of column address to first column.  Add lower nibble of column 0 to 127.
+#define OLED_ADDRESS_FIRST_COLUMN_HIGHER		0x10	//(Page Mode Only) Command to set higher nibble of column address to first column.  Or with higher nibble of column 0 to 127.
+#define OLED_ADDRESS_FIRST_PAGE				0xB0	//(Page Mode Only) Command to set address to first page.  Or with 0 to 7 to set address to pages 0 to 7.
+#define OLED_ADDRESS_COLUMN				0x21	//(Horizontal Mode) Following two bytes set start and end columns 0 to 127.  Default 0 then 127.
+#define OLED_ADDRESS_PAGE				0x22	//(Horizontal Mode) Following two bytes set start and end pages 0 to 7.  Default 0 then 7.
 
 //Define class for an hdc1080 temperature/humidity sensor.
 class ssd1306
@@ -54,6 +58,7 @@ class ssd1306
 		void init();
 		void send_command(uint8_t command);
 		void send_command(uint8_t command, uint8_t value);
+		void send_command(uint8_t command, uint8_t value1, uint8_t value2);
 		void set_address(uint8_t page, uint8_t column);
 		void send_data(uint8_t data);
 		void clear_screen(void);
