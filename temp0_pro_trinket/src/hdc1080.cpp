@@ -2,7 +2,7 @@
 
 hdc1080::hdc1080(void)
 {
-	Wire.begin();	//Communicating with the hdc1080 requires I2C.
+//	Wire.begin();	//Communicating with the hdc1080 requires I2C.  Not needed here as wire is initialised in main.
 }
 
 //Read the current configuration register value.  Returns 8-bit integer representing current register state.

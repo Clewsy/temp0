@@ -70,6 +70,10 @@ void setup(void) {
 	// Initialise UART at 115200baud.
 	Serial.begin(115200);
 
+	// Initialise I2C comms and set speed.
+	Wire.begin();
+	Wire.setClock(400000);	//Default is 100kHz but devices in this system are capable of 400kHz.
+
 	// Initialise sensor using the hdc1080 header and functions.
 	sensor = hdc1080();
 	sensor.reset();

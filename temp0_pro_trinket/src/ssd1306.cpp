@@ -3,7 +3,7 @@
 //Initiate an oled module.
 ssd1306::ssd1306(void)
 {
-	//Nothing needed here.
+//	Wire.begin();	//Communicating with the ssd1306 requires I2C.  Not needed here as wire is initialised in main.
 }
 
 //Send a command to oled driver - single command only.
