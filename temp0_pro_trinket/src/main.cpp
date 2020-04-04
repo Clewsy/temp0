@@ -40,7 +40,7 @@ void update_oled (double temp, double humi)
 		case MODE_NORMAL:
 			display.print_string((unsigned char *)"Temperature", 0, 0);
 			display.print_double(temp, 2, 0);
-			display.print_char(176, 2, 39);
+			display.print_char(CHAR_INDEX_DEG, 2, 39);
 			display.print_char('C', 2, 47);
 
 			display.print_double(humi, 4, 79);
