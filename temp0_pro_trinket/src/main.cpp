@@ -103,6 +103,23 @@ void setup(void) {
 	display = ssd1306();
 	display.init();
 
+display.print_string_arial((unsigned char *) "Game over.", 0, 0);
+display.print_string_arial((unsigned char *) "!@#$%^&*(", 4, 0);
+delay(5000);
+display.clear_screen();
+
+display.print_char_arial('#', 0, 0);
+delay(5000);
+display.clear_screen();
+display.print_char_arial('$', 0, 0);
+delay(5000);
+display.clear_screen();
+display.print_char_arial('!', 0, 0);
+delay(5000);
+display.clear_screen();
+display.print_char_arial('A', 0, 0);
+delay(5000);
+
 
 	//////////////// Splash Screen Animation.
 	display.test_pattern();

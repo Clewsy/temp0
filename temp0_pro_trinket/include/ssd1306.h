@@ -71,6 +71,10 @@ class ssd1306
 		void print_large_double(double number, uint8_t start_page, uint8_t start_column);
 		void test_pattern(void);
 
+		void send_segment(uint8_t byte, uint8_t page, uint8_t column);
+		void print_char_arial(unsigned char character, uint8_t start_page, uint8_t start_column);
+		void print_string_arial(unsigned char *string, uint8_t start_page, uint8_t start_column);
+
 	private:
 		void set_page(uint8_t page);
 		void set_column(uint8_t column);

@@ -231,3 +231,67 @@ void ssd1306::test_pattern(void)
 	}
 	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Reset memory addressing mode back to Page Mode.
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+void ssd1306::send_segment(uint8_t byte, uint8_t page, uint8_t column)
+{
+	set_address(page, column);
+	send_data(byte);
+}
+
+void ssd1306::print_char_arial(unsigned char character, uint8_t start_page, uint8_t start_column)
+{
+	const uint8_t *font=ArialMT_Plain_24;
+
+//	uint8_t font_width = pgm_read_byte(&&font[FONT_WIDTH]));
+	uint8_t font_height = pgm_read_byte(&font[FONT_HEIGHT]);
+	uint8_t font_first_char = pgm_read_byte(&font[FONT_FIRST_CHAR]);
+	uint8_t font_num_chars = pgm_read_byte(&font[FONT_NUM_CHARS]);
+
+	uint8_t char_data_addr_msb = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_ADDR_MSB ]);
+	uint8_t char_data_addr_lsb = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_ADDR_LSB ]);
+
+	uint16_t char_data_addr = (char_data_addr_msb << 8) + char_data_addr_lsb;
+	char_data_addr = (FIRST_CHAR_META + (4*font_num_chars) + char_data_addr); 
+	uint8_t char_data_size = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_BYTE_SIZE ]);
+//	uint8_t char_width = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_WIDTH ]);
+
+	uint8_t char_pages;	//Minimum number of pages needed for the font height.
+	if (font_height % 8)	{char_pages = ((font_height+(8-(font_height % 8))) / 8);}
+	else			{char_pages = (font_height / 8);}
+	
+
+	uint8_t page=start_page;
+	uint8_t col=start_column;
+
+		for (uint8_t b = 0; b < char_data_size; b++)
+		{
+			page = (start_page + (b % char_pages));
+			col = (start_column + (b / char_pages));
+			send_segment(pgm_read_byte(&font[char_data_addr]), page, col);
+			char_data_addr++;
+		}
+}
+
+void ssd1306::print_string_arial(unsigned char *string, uint8_t start_page, uint8_t start_column)
+{
+	const uint8_t *font=ArialMT_Plain_24;
+
+	uint8_t font_first_char = pgm_read_byte(&font[FONT_FIRST_CHAR]);
+
+	uint8_t col = start_column;
+
+//	for (uint8_t c = 0; c < 14; c++)
+	uint8_t c = 0;
+	while(string[c])
+	{
+		uint8_t current_char_width = pgm_read_byte(&font[ FIRST_CHAR_META + ((string[c]-font_first_char) * 4) + CHAR_WIDTH ]);
+
+		print_char_arial(string[c], start_page, col);
+
+		col+=current_char_width;
+
+		c++;
+	}
+}
