@@ -2,12 +2,12 @@
 
 // Interrupr sub-routine that is triggered by pressing the push-button.
 void ISR_button(void)
-{
-	if( ((millis() - trigger_time) > BUTTON_DEBOUNCE) && (digitalRead(BUTTON_PIN)==LOW))	//Button debounce.
+{	// Button debounce.
+	if( ((millis() - trigger_time) > BUTTON_DEBOUNCE) && (digitalRead(BUTTON_PIN)==LOW))
 	{
-		mode++;										//Increment to the next mode.
-		if(mode>MODE_LARGE) {mode=MODE_NORMAL;}
-		trigger_time = millis();							//Reset the button debounce timer.
+		mode++;						// Increment to the next mode.
+		if(mode>MODE_LARGE_INVERSE) {mode=MODE_NORMAL;}	// Rollover from the last mode to the first.
+		trigger_time = millis();			// Reset the button debounce timer.
 	}
 }
 
@@ -26,7 +26,7 @@ void send_data(double temp, double humi)
 
 }
 
-//Function to update the oled display.
+// Function to update the oled display.
 void update_oled (double temp, double humi)
 {
 	if(mode != last_mode)		// If the mode has changed since last time.
@@ -35,27 +35,47 @@ void update_oled (double temp, double humi)
 		last_mode=mode;		// Update last_mode ready for next comparison.
 	}
 
+	display.send_command(OLED_INVERSE_DISABLE + (mode >> 1));	//I.e. Inverse enabled for modes 0b10 & 0b11
+
 	switch(mode)
 	{
-		case MODE_NORMAL:
-			display.print_string((unsigned char *)"Temperature", 0, 0);
-			display.print_double(temp, 2, 0);
-			display.print_char(CHAR_INDEX_DEG, 2, 39);
-			display.print_char('C', 2, 47);
-
+		case MODE_NORMAL_INVERSE:						// Normal modes:
+		case MODE_NORMAL:							//  _______________
+			display.print_string((unsigned char *)"Temperature", 0, 0);	// |Temperature    |
+			display.print_double(temp, 2, 0);				// |12.34°         |
+			display.print_char(CHAR_INDEX_DEG, 2, 39);			// |         56.78%|
+			display.print_char('C', 2, 47);					// |_______Humidity|
 			display.print_double(humi, 4, 79);
 			display.print_char('%', 4, 119);
 			display.print_string((unsigned char *)"Humidity", 6, 63);
 			break;
 
-		case MODE_LARGE:
-			display.print_large_double(temp, 0, 0);
-			display.print_large_char(LARGE_CHAR_INDEX_DEG, 0, 96);
-
+		case MODE_LARGE:							// Large modes:
+		case MODE_LARGE_INVERSE:						//  _____
+			display.print_large_double(temp, 0, 0);				// |12.3°|
+			display.print_large_char(LARGE_CHAR_INDEX_DEG, 0, 96);		// |45.6%|
 			display.print_large_double(humi, 4, 0);
 			display.print_large_char('%', 4, 100);
 			break;
 	}
+}
+
+// Function will return the current value to output (analog) toi the external led.  I.e. the brightness level.
+uint8_t get_pulse_value (void)
+{
+	switch(led_pulse_dir)	//Increment or decrement the value depending on the direction it's currently moving.
+	{
+		case GOING_UP:
+			if (led_value>(255-LED_PULSE_SPEED))	{led_pulse_dir=GOING_DOWN;}
+			else					{led_value+=LED_PULSE_SPEED;}
+			break;
+		case GOING_DOWN:
+			if (led_value==0)			{led_pulse_dir=GOING_UP;}
+			else					{led_value-=LED_PULSE_SPEED;}
+			break;
+	}
+
+	return (led_value);
 }
 
 void setup(void) {
@@ -98,7 +118,7 @@ void setup(void) {
 	sensor.run_heater(5);
 	display.clear_screen();
 
-	// After all other initialisations zre complete, enable the push-button interrupt.
+	// After all other initialisations are complete, enable the push-button interrupt.
 	pinMode(BUTTON_PIN, INPUT_PULLUP);
 	attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISR_button, LOW);
 
@@ -108,14 +128,13 @@ void setup(void) {
 
 void loop(void)
 {
-
-	digitalWrite(LED_EXTERNAL, !mode);
+	analogWrite(LED_EXTERNAL, get_pulse_value());			// Update the brightness of the external led.
 
 	double *sensor_array = sensor.get_sensor_data();		// Update temperature and humidity readings.
 
-	send_data(sensor_array[TEMPERATURE], sensor_array[HUMIDITY]);	// Send temperature and humidity readins to the esp8266.
+	send_data(sensor_array[TEMPERATURE], sensor_array[HUMIDITY]);	// Send temperature and humidity readings to the esp8266.
 
-	update_oled(sensor_array[TEMPERATURE], sensor_array[HUMIDITY]);	// Send temperature and humidity readins to the esp8266.
+	update_oled(sensor_array[TEMPERATURE], sensor_array[HUMIDITY]);	// Update the oled display with the latest  temperature and humidity readings.
 
 }
 
