@@ -39,23 +39,25 @@ void update_oled (double temp, double humi)
 
 	switch(mode)
 	{
-		case MODE_NORMAL_INVERSE:						// Normal modes:
-		case MODE_NORMAL:							//  _______________
-			display.print_string((unsigned char *)"Temperature", 0, 0);	// |Temperature    |
-			display.print_double(temp, 2, 0);				// |12.34°         |
-			display.print_char(CHAR_INDEX_DEG, 2, 39);			// |         56.78%|
-			display.print_char('C', 2, 47);					// |_______Humidity|
-			display.print_double(humi, 4, 79);
-			display.print_char('%', 4, 119);
-			display.print_string((unsigned char *)"Humidity", 6, 63);
+		case MODE_NORMAL_INVERSE:								// Normal modes:
+		case MODE_NORMAL:									//  _______________
+			display.print_string((unsigned char *)"Temperature", Roboto_Mono_12, 0, 0);	// |Temperature    |
+			display.print_double(temp, Roboto_Mono_12, 2, 0);				// |12.34°         |
+			display.print_char('°', Roboto_Mono_12, 2, 36);					// |         56.78%|
+			display.print_char('C', Roboto_Mono_12, 2, 43);					// |_______Humidity|
+
+			display.print_double(humi, Roboto_Mono_12, 4, 86);
+			display.print_char('%', Roboto_Mono_12, 4, 121);
+			display.print_string((unsigned char *)"Humidity", Roboto_Mono_12, 6, 72);
 			break;
 
-		case MODE_LARGE:							// Large modes:
-		case MODE_LARGE_INVERSE:						//  _____
-			display.print_large_double(temp, 0, 0);				// |12.3°|
-			display.print_large_char(LARGE_CHAR_INDEX_DEG, 0, 96);		// |45.6%|
-			display.print_large_double(humi, 4, 0);
-			display.print_large_char('%', 4, 100);
+		case MODE_LARGE:						// Large modes:
+		case MODE_LARGE_INVERSE:					//  _____
+			display.print_double(temp, Roboto_Mono_25, 0, 0);	// |12.3°|
+			display.print_char('°', Roboto_Mono_25, 0, 72);		// |45.6%|
+			display.print_char('C', Roboto_Mono_25, 0, 83);
+			display.print_double(humi, Roboto_Mono_25, 4, 0);
+			display.print_char('%', Roboto_Mono_25, 4, 75);
 			break;
 	}
 }
@@ -103,24 +105,6 @@ void setup(void) {
 	display = ssd1306();
 	display.init();
 
-display.print_string_arial((unsigned char *) "Game over.", 0, 0);
-display.print_string_arial((unsigned char *) "!@#$%^&*(", 4, 0);
-delay(5000);
-display.clear_screen();
-
-display.print_char_arial('#', 0, 0);
-delay(5000);
-display.clear_screen();
-display.print_char_arial('$', 0, 0);
-delay(5000);
-display.clear_screen();
-display.print_char_arial('!', 0, 0);
-delay(5000);
-display.clear_screen();
-display.print_char_arial('A', 0, 0);
-delay(5000);
-
-
 	//////////////// Splash Screen Animation.
 	display.test_pattern();
 	delay(300);
@@ -128,7 +112,7 @@ delay(5000);
 	display.draw_box(0, 0, 8, 128);
 	display.draw_box(1, 16, 6, 96);
 	display.draw_box(2, 32, 4, 64);
-	display.print_string((unsigned char *) "temp0", 3, 43);
+	display.print_string((unsigned char *) "temp0", Roboto_Mono_12, 3, 45);
 	//////////////// End Splash Screen Animation.
 
 	// Run heater while the splash screen is displayed.

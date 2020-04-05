@@ -145,72 +145,6 @@ void ssd1306::init(void)
 	send_command(OLED_ON);										// Turn display on.
 }
 
-//Print a single character using an 8x16 pixel font.
-void ssd1306::print_char(unsigned char character, uint8_t start_page, uint8_t start_column)
-{
-	for(uint8_t p=0; p<2; p++)							// Characters span two pages.
-	{
-		set_address((start_page+p), start_column);
-		for(uint8_t i=(8*p); i<(8+(8*p)); i++)					// Cycle through each of the 8 segments on the current character page.
-		{
-			send_data(pgm_read_byte(&(font_8x16[character-32][i])));	// Send the data that corresponds to the segments defined in the font.
-		}									// Note "-32" is required to map the decimal value of <char> to the defined font.
-	}
-}
-
-// Print a string of characters using an 8x16 pixel font.
-void ssd1306::print_string(unsigned char *string, uint8_t start_page, uint8_t start_column)
-{
-	uint8_t c = 0;
-	while(string[c])	// Print each character until end of string.
-	{
-		print_char(string[c], start_page, (start_column+(c*8)));
-		c++;
-	} 
-}
-
-// Convert a double to a character string and print in an 8x16 pixel font.
-void ssd1306::print_double(double number, uint8_t start_page, uint8_t start_column)
-{
-	char buffer[5];
-	dtostrf(number, 4, 2, buffer);			// Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
-
-	print_string((unsigned char *) buffer, start_page, start_column);
-}
-
-// Print a single character using a 24x32 pixel font.
-void ssd1306::print_large_char(unsigned char character, uint8_t start_page, uint8_t start_column)
-{
-	for(uint8_t p=0; p<4; p++)							// Characters span four pages.
-	{
-		set_address((start_page+p), start_column);
-		for(uint8_t i=(24*p); i<(24+(24*p)); i++)				// Cycle through each of the 8 segments on the current character page.
-		{
-			send_data(pgm_read_byte(&(font_24x32[character-32][i])));	// Send the data that corresponds to the segments defined in the font.
-		}									// Note "-32" is required to map the decimal value of <char> to the defined font.
-	}
-}
-
-// Print a string of characters using a 24x32 pixel font.
-void ssd1306::print_large_string(unsigned char *string, uint8_t start_page, uint8_t start_column)
-{
-	uint8_t c = 0;
-	while(string[c])	// Print each character until end of string.
-	{
-		print_large_char(string[c], start_page, (start_column+(c*24)));
-		c++;
-	} 
-}
-
-// Convert a double to a character string and print in a 24x32 pixel font.
-void ssd1306::print_large_double(double number, uint8_t start_page, uint8_t start_column)
-{
-	char buffer[5];					// Clip the last digit (hudredths).
-	dtostrf(number, 4, 1, buffer);			// Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
-
-	print_large_string((unsigned char *) buffer, start_page, start_column);
-}
-
 // Print a test patter to the display.
 void ssd1306::test_pattern(void)
 {
@@ -240,9 +174,8 @@ void ssd1306::send_segment(uint8_t byte, uint8_t page, uint8_t column)
 	send_data(byte);
 }
 
-void ssd1306::print_char_arial(unsigned char character, uint8_t start_page, uint8_t start_column)
+void ssd1306::print_char(unsigned char character, const uint8_t *font, uint8_t start_page, uint8_t start_column)
 {
-	const uint8_t *font=ArialMT_Plain_24;
 
 //	uint8_t font_width = pgm_read_byte(&&font[FONT_WIDTH]));
 	uint8_t font_height = pgm_read_byte(&font[FONT_HEIGHT]);
@@ -274,24 +207,30 @@ void ssd1306::print_char_arial(unsigned char character, uint8_t start_page, uint
 		}
 }
 
-void ssd1306::print_string_arial(unsigned char *string, uint8_t start_page, uint8_t start_column)
+void ssd1306::print_string(unsigned char *string, const uint8_t *font, uint8_t start_page, uint8_t start_column)
 {
-	const uint8_t *font=ArialMT_Plain_24;
 
 	uint8_t font_first_char = pgm_read_byte(&font[FONT_FIRST_CHAR]);
 
 	uint8_t col = start_column;
 
-//	for (uint8_t c = 0; c < 14; c++)
 	uint8_t c = 0;
 	while(string[c])
 	{
 		uint8_t current_char_width = pgm_read_byte(&font[ FIRST_CHAR_META + ((string[c]-font_first_char) * 4) + CHAR_WIDTH ]);
 
-		print_char_arial(string[c], start_page, col);
+		print_char(string[c], font, start_page, col);
 
 		col+=current_char_width;
 
 		c++;
 	}
+}
+
+void ssd1306::print_double(double number, const uint8_t *font, uint8_t start_page, uint8_t start_column)
+{
+	char buffer[6];					//
+	dtostrf(number, 5, 2, buffer);			// Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
+
+	print_string((unsigned char *) buffer, font, start_page, start_column);
 }
