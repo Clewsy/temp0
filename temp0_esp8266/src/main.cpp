@@ -1,34 +1,34 @@
 #include "temp0.h"
 
-//Initiate an esp8266 webserver called "server".
+// Initiate an esp8266 webserver called "server".
 ESP8266WebServer server(80);
 
-//Parse the temperature value (in plain text) from the serial string.
+// Parse the temperature value (in plain text) from the serial string.
 String get_temp()
 {
-	Serial.find('t');				//Character 't' indicates beginning of the serial string indicating the temperature value.
-	String temp = Serial.readStringUntil(';');	//Character ';' indicates end of the temp string.
-	if(temp == "")	{ temp = "error"; }		//Will print "error" if the esp8266 is not receiving the serial string.
+	Serial.find('t');				// Character 't' indicates beginning of the serial string indicating the temperature value.
+	String temp = Serial.readStringUntil(';');	// Character ';' indicates end of the temp string.
+	if(temp == "")	{ temp = "error"; }		// Will print "error" if the esp8266 is not receiving the serial string.
 	return temp;
 }
 
-//Parse the humidity value (in plain text) from the serial string.
+// Parse the humidity value (in plain text) from the serial string.
 String get_humi()
 {
-	Serial.find('h');				//Character 'h' indicates beginning of the serial string indicating the humidity value.
-	String humi = Serial.readStringUntil(';');	//Character ';' indicates end of the humi string.
-	if(humi == "")	{ humi = "error"; }		//Will print "error" if the esp8266 is not receiving the serial string.
+	Serial.find('h');				// Character 'h' indicates beginning of the serial string indicating the humidity value.
+	String humi = Serial.readStringUntil(';');	// Character ';' indicates end of the humi string.
+	if(humi == "")	{ humi = "error"; }		// Will print "error" if the esp8266 is not receiving the serial string.
 	return humi;
 }
 
-//Just print in plain text the temperature value string (succeeded by a newline character).
+// Just print in plain text the temperature value string (succeeded by a newline character).
 void handle_temp() { server.send(200, "text/plain", (get_temp() + '\n')); }
 
-//Just print in plain text the humidity value string (succeeded by a newline character).
+// Just print in plain text the humidity value string (succeeded by a newline character).
 void handle_humi() { server.send(200, "text/plain", (get_humi() + '\n')); }
 
-//Print a pretty page showing temperature and humidity.  
-//The large block is a base64 encoded png file to serve as a favicon.
+// Print a pretty page showing temperature and humidity.  
+// The large block is a base64 encoded png file to serve as a favicon.
 void handle_root()
 {
 	String page = "<!DOCTYPE html>\n"; 
@@ -101,7 +101,7 @@ void handle_root()
 	server.send(200, "text/html", page);
 }
 
-//Basic default page output.
+// Basic default page output.
 void handle_not_found()
 {
 	String message = "File Not Found\n\n";
@@ -119,17 +119,17 @@ void handle_not_found()
 	server.send(404, "text/plain", message);
 }
 
-//System initialisation.
+// System initialisation.
 void setup(void)
 {
-	//Initialise credential strings.
+	// Initialise credential strings.
 	const char* ssid = STASSID;
 	const char* password = STAPSK;
 
-	//Initialise uart.
+	// Initialise uart.
 	Serial.begin(115200);
 
-	//Initialise wifi station.
+	// Initialise wifi station.
 	WiFi.hostname(HOSTNAME);
 	WiFi.mode(WIFI_STA);
 	WiFi.begin(ssid, password);
@@ -137,7 +137,7 @@ void setup(void)
 	// Wait for connection
 	while (WiFi.status() != WL_CONNECTED) { delay(500); }
 
-	//Define functions to call depending on full url address.
+	// Define functions to call depending on full url address.
 	server.on("/", handle_root);
 
 	server.on("/t", handle_temp);
@@ -150,7 +150,7 @@ void setup(void)
 
 	server.onNotFound(handle_not_found);
 
-	//Initialise wifi web server.
+	// Initialise wifi web server.
 	server.begin();
 }
 

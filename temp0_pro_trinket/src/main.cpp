@@ -35,7 +35,7 @@ void update_oled (double temp, double humi)
 		last_mode=mode;		// Update last_mode ready for next comparison.
 	}
 
-	display.send_command(OLED_INVERSE_DISABLE + (mode >> 1));	//I.e. Inverse enabled for modes 0b10 & 0b11
+	display.send_command(OLED_INVERSE_DISABLE + (mode >> 1));	// I.e. Inverse enabled for modes 0b10 & 0b11
 
 	switch(mode)
 	{
@@ -63,7 +63,7 @@ void update_oled (double temp, double humi)
 // Function will return the current value to output (analog) toi the external led.  I.e. the brightness level.
 uint8_t get_pulse_value (void)
 {
-	switch(led_pulse_dir)	//Increment or decrement the value depending on the direction it's currently moving.
+	switch(led_pulse_dir)	// Increment or decrement the value depending on the direction it's currently moving.
 	{
 		case GOING_UP:
 			if (led_value>(255-LED_PULSE_SPEED))	{led_pulse_dir=GOING_DOWN;}
@@ -104,7 +104,7 @@ void setup(void) {
 	display.init();
 
 
-	//////////////// Splash Screen Animation
+	//////////////// Splash Screen Animation.
 	display.test_pattern();
 	delay(300);
 	display.clear_screen();
@@ -112,7 +112,7 @@ void setup(void) {
 	display.draw_box(1, 16, 6, 96);
 	display.draw_box(2, 32, 4, 64);
 	display.print_string((unsigned char *) "temp0", 3, 43);
-	//////////////// End Splash Screen Animation
+	//////////////// End Splash Screen Animation.
 
 	// Run heater while the splash screen is displayed.
 	sensor.run_heater(5);
@@ -135,6 +135,5 @@ void loop(void)
 	send_data(sensor_array[TEMPERATURE], sensor_array[HUMIDITY]);	// Send temperature and humidity readings to the esp8266.
 
 	update_oled(sensor_array[TEMPERATURE], sensor_array[HUMIDITY]);	// Update the oled display with the latest  temperature and humidity readings.
-
 }
 
