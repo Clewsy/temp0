@@ -176,6 +176,7 @@ void ssd1306::send_segment(uint8_t byte, uint8_t page, uint8_t column)
 	send_data(byte);
 }
 
+// Take a character, obtain the character map data from the defined font, and print that character to the defined co-ordinates.
 void ssd1306::print_char(unsigned char character, const uint8_t *font, uint8_t start_page, uint8_t start_column)
 {
 
@@ -205,7 +206,7 @@ void ssd1306::print_char(unsigned char character, const uint8_t *font, uint8_t s
 	else			{char_pages = (font_height / 8);}
 	
 	// Run through each of the bytes of character data and send to the correct segment address.
-	//	Page address : start_page + (b % char_pages)		: Starting from the top page, move down with each increments for the number of pages needed (char_pages), then roll back to the top page.
+	//	Page address : start_page + (b % char_pages)		: Starting from the top page, move down with each increment for the number of pages needed (char_pages), then roll back to the top page.
 	//	Column address : start_column + (b / char_pages) 	: Starting from the left-most column, remain on that column for the required number of pages then move to the next column.
 	for (uint8_t b = 0; b < char_data_size; b++)
 	{
@@ -223,30 +224,31 @@ void ssd1306::print_char(unsigned char character, const uint8_t *font, uint8_t s
 	}
 }
 
+// Sequentially print each character in a string starting at the defined co-ordinates.
 void ssd1306::print_string(unsigned char *string, const uint8_t *font, uint8_t start_page, uint8_t start_column)
 {
+	uint8_t font_first_char = pgm_read_byte(&font[FONT_FIRST_CHAR]);	// From the font metadata obtain the value of the first included character (often ' ' (i.e. space) or 0x20).
 
-	uint8_t font_first_char = pgm_read_byte(&font[FONT_FIRST_CHAR]);
+	uint8_t column = start_column;	// Initialise the working column - starts at start_column.
 
-	uint8_t col = start_column;
-
-	uint8_t c = 0;
-	while(string[c])
+	uint8_t character = 0;		// Initialise the character index to be used in the character array.	
+	while(string[character])	// Repeat the while loop until "character" is incremented to the end of the string.
 	{
-		uint8_t current_char_width = pgm_read_byte(&font[ FIRST_CHAR_META + ((string[c]-font_first_char) * 4) + CHAR_WIDTH ]);
+		uint8_t current_char_width = pgm_read_byte(&font[ FIRST_CHAR_META + ((string[character]-font_first_char) * 4) + CHAR_WIDTH ]);	// From the character metadata determine width in pixels of the current char.
 
-		print_char(string[c], font, start_page, col);
+		print_char(string[character], font, start_page, column);										// Print the current character to the oled.
 
-		col+=current_char_width;
+		column+=current_char_width;												// Increment the column index by the width of the character.
 
-		c++;
+		character++;														// Increment to the next character in the string.
 	}
 }
 
+// Convert a double to an ascii srting, then print that string to the defined co-ordinates.
 void ssd1306::print_double(double number, const uint8_t *font, uint8_t start_page, uint8_t start_column)
 {
-	char buffer[6];					//
+	char buffer[6];					// Define an array buffer to store the ascii string.
 	dtostrf(number, 5, 2, buffer);			// Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
 
-	print_string((unsigned char *) buffer, font, start_page, start_column);
+	print_string((unsigned char *) buffer, font, start_page, start_column);	// Send the string to the print_string function.
 }
