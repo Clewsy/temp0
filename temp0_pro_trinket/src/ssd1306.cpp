@@ -188,7 +188,7 @@ void ssd1306::print_char(unsigned char character, const uint8_t *font, uint8_t s
 	uint16_t char_data_addr = (char_data_addr_msb << 8) + char_data_addr_lsb;
 	char_data_addr = (FIRST_CHAR_META + (4*font_num_chars) + char_data_addr); 
 	uint8_t char_data_size = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_BYTE_SIZE ]);
-//	uint8_t char_width = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_WIDTH ]);
+	uint8_t char_width = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_WIDTH ]);
 
 	uint8_t char_pages;	//Minimum number of pages needed for the font height.
 	if (font_height % 8)	{char_pages = ((font_height+(8-(font_height % 8))) / 8);}
@@ -198,12 +198,21 @@ void ssd1306::print_char(unsigned char character, const uint8_t *font, uint8_t s
 	uint8_t page=start_page;
 	uint8_t col=start_column;
 
+//	uint8_t char_end_buffer_bytes = ((char_pages * char_width) - char_data_size);
+
 		for (uint8_t b = 0; b < char_data_size; b++)
 		{
 			page = (start_page + (b % char_pages));
 			col = (start_column + (b / char_pages));
 			send_segment(pgm_read_byte(&font[char_data_addr]), page, col);
 			char_data_addr++;
+		}
+
+		for (uint8_t b = char_data_size; b < (char_pages * char_width); b++)
+		{
+			page = (start_page + (b % char_pages));
+			col = (start_column + (b / char_pages));
+			send_segment(0x00, page, col);
 		}
 }
 
