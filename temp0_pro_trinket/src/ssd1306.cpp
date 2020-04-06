@@ -168,6 +168,8 @@ void ssd1306::test_pattern(void)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
+// Actually send a segment (8-pixel column) to the ssd1306.
+// TO ADD: ERROR-CHECKING - don't want to send segment if out of bounds of the display.
 void ssd1306::send_segment(uint8_t byte, uint8_t page, uint8_t column)
 {
 	set_address(page, column);
@@ -177,43 +179,48 @@ void ssd1306::send_segment(uint8_t byte, uint8_t page, uint8_t column)
 void ssd1306::print_char(unsigned char character, const uint8_t *font, uint8_t start_page, uint8_t start_column)
 {
 
-//	uint8_t font_width = pgm_read_byte(&&font[FONT_WIDTH]));
-	uint8_t font_height = pgm_read_byte(&font[FONT_HEIGHT]);
-	uint8_t font_first_char = pgm_read_byte(&font[FONT_FIRST_CHAR]);
-	uint8_t font_num_chars = pgm_read_byte(&font[FONT_NUM_CHARS]);
+//	uint8_t font_width = pgm_read_byte(&&font[FONT_WIDTH]));		// From the font metadata obtain width of characters in pixels (this is max width for non fixed-width fonts).
+	uint8_t font_height = pgm_read_byte(&font[FONT_HEIGHT]);		// From the font metadata obtain height of characters in pixels.
+	uint8_t font_first_char = pgm_read_byte(&font[FONT_FIRST_CHAR]);	// From the font metadata obtain the value of the first included character (often ' ' (i.e. space) or 0x20).
+	uint8_t font_num_chars = pgm_read_byte(&font[FONT_NUM_CHARS]);		// From the font metadata obtain the total number of characters included.
 
-	uint8_t char_data_addr_msb = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_ADDR_MSB ]);
-	uint8_t char_data_addr_lsb = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_ADDR_LSB ]);
+	// Determine address of character data for the current character.  This is a 16-bit value split into two 8-bit values stored in PROGMEM.
+	// Character address MSB is the byte located at ( FIRST_CHAR_META + ((character - font_first_char) * 4) + CHAR_ADDR_MSB )
+	// Note the 16-bit address is indexed from zero where zero is the location of the first character data byte.
+	// Therefore actual array address neads to be incremented by the number of bytes used by all metadata.
+	//	FIRST_CHAR_META : address of the first character-specific metadata (i.e. skip over the font metadata bytes)
+	//	character-font_first_char : convert the char value to the character index number.  E.g. for char '!', 0x21-0x20=0x01, therefore second character in index (0x00 is first).
+	//	*4 : Each character has four metadata bytes, so want to skip over 4*character index bytes to get to the metadata for the current character.
+	//	+ CHAR_ADDR_MSB : Within the character metadata, the MSB of the address is at index CHAR_ADDR_MSB.
+	uint16_t char_data_addr =	( (pgm_read_byte(&font[FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_ADDR_MSB]) ) << 8	) +	// Character index MSB shifted left 8 bits +
+					( (pgm_read_byte(&font[FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_ADDR_LSB]) )		) +	// Character index LSB +
+					( FIRST_CHAR_META + (font_num_chars * 4 ) );									// Number of bytes used by font and character metadata.
 
-	uint16_t char_data_addr = (char_data_addr_msb << 8) + char_data_addr_lsb;
-	char_data_addr = (FIRST_CHAR_META + (4*font_num_chars) + char_data_addr); 
-	uint8_t char_data_size = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_BYTE_SIZE ]);
-	uint8_t char_width = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_WIDTH ]);
+	uint8_t char_data_size = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_BYTE_SIZE ]);	// From the char metadata obtain the number of data bytes that define the char.
+	uint8_t char_width = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_WIDTH ]);		// From the char metadata obtain the width in pixels. 
 
-	uint8_t char_pages;	//Minimum number of pages needed for the font height.
+	// Determine the minimum number of pages needed to display the full height of the character - pages are 8 pixels tall.
+	uint8_t char_pages;
 	if (font_height % 8)	{char_pages = ((font_height+(8-(font_height % 8))) / 8);}
 	else			{char_pages = (font_height / 8);}
 	
+	// Run through each of the bytes of character data and send to the correct segment address.
+	//	Page address : start_page + (b % char_pages)		: Starting from the top page, move down with each increments for the number of pages needed (char_pages), then roll back to the top page.
+	//	Column address : start_column + (b / char_pages) 	: Starting from the left-most column, remain on that column for the required number of pages then move to the next column.
+	for (uint8_t b = 0; b < char_data_size; b++)
+	{
+		send_segment(pgm_read_byte(&font[char_data_addr]), ( start_page + (b % char_pages) ), ( start_column + (b / char_pages) ));
 
-	uint8_t page=start_page;
-	uint8_t col=start_column;
+		char_data_addr++;	// Increment the working address to the next byte in the character data.
+	}
 
-//	uint8_t char_end_buffer_bytes = ((char_pages * char_width) - char_data_size);
-
-		for (uint8_t b = 0; b < char_data_size; b++)
-		{
-			page = (start_page + (b % char_pages));
-			col = (start_column + (b / char_pages));
-			send_segment(pgm_read_byte(&font[char_data_addr]), page, col);
-			char_data_addr++;
-		}
-
-		for (uint8_t b = char_data_size; b < (char_pages * char_width); b++)
-		{
-			page = (start_page + (b % char_pages));
-			col = (start_column + (b / char_pages));
-			send_segment(0x00, page, col);
-		}
+	// Font data includes the minimum bytes needed without 0x00 bytes at the end.  Now need to send these 0x00 bytes to clear the remaining character frame.
+	//	Number of these padding bytes calculated by minusing the number of character data bytes (char_data_size) from the total number of bytes needed.
+	//	Total number of bytes needed calculated from the character width (char_width) multiplied by the number of pages needed for the character height (char_pages).
+	for (uint8_t b = char_data_size; b < (char_pages * char_width); b++)
+	{
+		send_segment(0x00, ( start_page + (b % char_pages) ), ( start_column + (b / char_pages) ));
+	}
 }
 
 void ssd1306::print_string(unsigned char *string, const uint8_t *font, uint8_t start_page, uint8_t start_column)

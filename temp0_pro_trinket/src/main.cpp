@@ -55,7 +55,7 @@ void update_oled (double temp, double humi)
 		case MODE_LARGE_INVERSE:					//  _____
 			display.print_double(temp, Roboto_Mono_25, 0, 0);	// |12.3°|
 			display.print_char('°', Roboto_Mono_25, 0, 73);		// |45.6%|
-			display.print_char('C', Roboto_Mono_25, 0, 84);
+			display.print_char('C', Roboto_Mono_25, 0, 85);
 			display.print_double(humi, Roboto_Mono_25, 4, 0);
 			display.print_char('%', Roboto_Mono_25, 4, 77);
 			break;
@@ -78,7 +78,7 @@ uint8_t get_pulse_value (void)
 	}
 
 //	return (led_value);
-	return (0);
+	return (0);		// Fix the led pulse later.
 }
 
 void setup(void) {
