@@ -13,7 +13,7 @@
 #define BUTTON_DEBOUNCE	20	// Duration in milliseconds to register a press of the button.
 
 #define LED_EXTERNAL	6	// LED connected to this pin.  On pro trinket, this pin has analog out capability.
-#define LED_PULSE_SPEED	32	// Increment size for increasing/decreasing led brightness.
+#define LED_PULSE_SPEED	16	// Increment size for increasing/decreasing led brightness.
 #define GOING_UP	0	// LED pulse direction, brigtness increasing.
 #define GOING_DOWN	1	// LED pulse direction, brigtness decreasing.
 

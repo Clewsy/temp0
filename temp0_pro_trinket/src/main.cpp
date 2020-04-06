@@ -39,31 +39,39 @@ void update_oled (double temp, double humi)
 
 	switch(mode)
 	{
-		case MODE_NORMAL_INVERSE:								// Normal modes:
-		case MODE_NORMAL:									//  _______________
-			display.print_string((unsigned char *)"Temperature", Roboto_Mono_12, 0, 0);	// |Temperature    |
-			display.print_double(temp, Roboto_Mono_12, 2, 0);				// |12.34°         |
-			display.print_char('°', Roboto_Mono_12, 2, 36);					// |         56.78%|
-			display.print_char('C', Roboto_Mono_12, 2, 43);					// |_______Humidity|
-
-			display.print_double(humi, Roboto_Mono_12, 4, 86);
-			display.print_char('%', Roboto_Mono_12, 4, 121);
+		case MODE_NORMAL_INVERSE:
+		case MODE_NORMAL:
+			display.print_string((unsigned char *)"Temperature", Roboto_Mono_12, 0, 0);	// Normal modes:
+			display.print_double(temp, Roboto_Mono_12, 2, 0);				//  _______________
+			display.print_char(0xB0, Roboto_Mono_12, 2, 36); // 0xB0:'°'			// |Temperature    |
+			display.print_char('C', Roboto_Mono_12, 2, 43);					// |12.34°         |
+			display.print_double(humi, Roboto_Mono_12, 4, 86);				// |         56.78%|
+			display.print_char('%', Roboto_Mono_12, 4, 121);				// |_______Humidity|
 			display.print_string((unsigned char *)"Humidity", Roboto_Mono_12, 6, 72);
 			break;
 
-		case MODE_LARGE:						// Large modes:
-		case MODE_LARGE_INVERSE:					//  _____
-			display.print_double(temp, Roboto_Mono_25, 0, 0);	// |12.3°|
-			display.print_char('°', Roboto_Mono_25, 0, 73);		// |45.6%|
-			display.print_char('C', Roboto_Mono_25, 0, 85);
-			display.print_double(humi, Roboto_Mono_25, 4, 0);
-			display.print_char('%', Roboto_Mono_25, 4, 77);
+		case MODE_LARGE:
+		case MODE_LARGE_INVERSE:
+			display.print_double(temp, Roboto_Mono_25, 0, 0+16);				// Large modes:
+			display.print_char(0xB0, Roboto_Mono_25, 0, 73+16); // 0xB0:'°'			//  _______
+			display.print_char('C', Roboto_Mono_25, 0, 86+16);				// |12.34°C|
+			display.print_double(humi, Roboto_Mono_25, 4, 0+19);				// |56.78_%|
+			display.print_char('%', Roboto_Mono_25, 4, 77+19);
 			break;
 	}
 }
 
-// Function will return the current value to output (analog) toi the external led.  I.e. the brightness level.
-uint8_t get_pulse_value (void)
+// Initialise internal timer #2.  This timer is used to trigger an ISR that controls the pulse effect of the external LED.
+void init_timer(void)
+{
+	TIMSK2 |= (1 << TOIE2);	// Set Timer Overflow Interrupt Enable bit in the Timer 2 Interrupt Mask Register.
+	TCCR2B |= (1 << CS02) | (1 << CS01) | (1 << CS00);	// Set divisor to 1024.
+								// Overflow frequency = 1 / ((1/F)(2^8)(divisor))
+								// With divisor set to 1024, overflow frequency ~ 61Hz.
+}
+
+// Timer 2 interrupt subroutine vector.  Used to pulse the external LED.
+ISR(TIMER2_OVF_vect)
 {
 	switch(led_pulse_dir)	// Increment or decrement the value depending on the direction it's currently moving.
 	{
@@ -76,10 +84,10 @@ uint8_t get_pulse_value (void)
 			else					{led_value-=LED_PULSE_SPEED;}
 			break;
 	}
-
-//	return (led_value);
-	return (0);		// Fix the led pulse later.
+	
+	analogWrite(LED_EXTERNAL, led_value);			// Update the brightness of the external led.
 }
+
 
 void setup(void) {
 
@@ -124,14 +132,15 @@ void setup(void) {
 	pinMode(BUTTON_PIN, INPUT_PULLUP);
 	attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISR_button, LOW);
 
+	// Enable the timer interrupt (for LED pulsing).
+	init_timer();
+
 	// Turn off built-in LED to indicate Pro Trinket has finished "booting".
 	digitalWrite(LED_BUILTIN, LOW);
 }
 
 void loop(void)
 {
-	analogWrite(LED_EXTERNAL, get_pulse_value());			// Update the brightness of the external led.
-
 	double *sensor_array = sensor.get_sensor_data();		// Update temperature and humidity readings.
 
 	send_data(sensor_array[TEMPERATURE], sensor_array[HUMIDITY]);	// Send temperature and humidity readings to the esp8266.
