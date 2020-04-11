@@ -20,7 +20,7 @@ void ssd1306::send_command(uint8_t command, uint8_t value)
 	Wire.endTransmission(OLED_ADDR);
 }
 
-// Send a command to oled driver - single command followed by two command value.
+// Send a command to oled driver - single command followed by two command values.
 void ssd1306::send_command(uint8_t command, uint8_t value1, uint8_t value2)
 {
 	Wire.beginTransmission(OLED_ADDR);
@@ -65,14 +65,14 @@ void ssd1306::send_data(uint8_t data)
 // Actually send a segment (8-pixel column) to the ssd1306.
 void ssd1306::send_segment(uint8_t byte, uint8_t page, uint8_t column)
 {
-	if ( (page < 8) & (column < 128) )	//Don't bother sending data if the address is out-of-bounds.
+	if ( (page < 8) & (column < 128) )	// Don't bother sending data if the address is out-of-bounds.
 	{
 		set_address(page, column);
 		send_data(byte);
 	}
 }
 
-///////////////////////////////////////Begin public functions
+/////////////////////////////////////// Begin public functions
 
 // Define an oled module.
 ssd1306::ssd1306(void)
@@ -126,7 +126,6 @@ void ssd1306::clear_screen(void)
 void ssd1306::invert_screen(bool invert)
 {
 	send_command(OLED_INVERSE_DISABLE + invert);
-
 }
 
 // Draw a box with top left corner at upper pixel of [start page] and column [start_column],
@@ -206,20 +205,29 @@ void ssd1306::print_char(unsigned char character, const uint8_t *font, uint8_t s
 					( (pgm_read_byte(&font[FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_ADDR_LSB]) )		) +	// Character index LSB +
 					( FIRST_CHAR_META + (font_num_chars * 4 ) );									// Number of bytes used by font and character metadata.
 
-	uint8_t char_data_size = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_BYTE_SIZE ]);	// From the char metadata obtain the number of data bytes that define the char.
-	uint8_t char_width = pgm_read_byte(&font[ FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_WIDTH ]);		// From the char metadata obtain the width in pixels. 
+	// From the char metadata, obtain the number of data bytes used to define the char.
+	uint8_t char_data_size = pgm_read_byte(&font[	FIRST_CHAR_META +			// Start at first character metadata byte.
+							((character-font_first_char) * 4) +	// Skip to the metadatabytes for the current character.
+							CHAR_BYTE_SIZE ]);			// Skip to the metadata byte that represents number of char data bytes.
+
+	// From the char metadata, obtain the char width in pixels. 
+	uint8_t char_width = pgm_read_byte(&font[	FIRST_CHAR_META +			// Start at first character metadata byte.
+							((character-font_first_char) * 4) +	// Skip to the metadatabytes for the current character.
+							CHAR_WIDTH ]);				// Skip to the metadata byte that represents char width.
 
 	// Determine the minimum number of pages needed to display the full height of the character - pages are 8 pixels tall.
 	uint8_t char_pages;
-	if (font_height % 8)	{char_pages = ((font_height+(8-(font_height % 8))) / 8);}
-	else			{char_pages = (font_height / 8);}
-	
+	if (font_height % 8)	{char_pages = ((font_height+(8-(font_height % 8))) / 8);}	// Height in pixels is not a multiple of 8.
+	else			{char_pages = (font_height / 8);}				// Height in pixels is a multiple of 8.
+
 	// Run through each of the bytes of character data and send to the correct segment address.
 	//	Page address : start_page + (b % char_pages)		: Starting from the top page, move down with each increment for the number of pages needed (char_pages), then roll back to the top page.
 	//	Column address : start_column + (b / char_pages) 	: Starting from the left-most column, remain on that column for the required number of pages then move to the next column.
 	for (uint8_t b = 0; b < char_data_size; b++)
 	{
-		send_segment(pgm_read_byte(&font[char_data_addr]), ( start_page + (b % char_pages) ), ( start_column + (b / char_pages) ));
+		send_segment(	pgm_read_byte(&font[char_data_addr]),	// Segment data.
+				start_page + (b % char_pages),		// Page address.
+				start_column + (b / char_pages) );	// Column address.
 
 		char_data_addr++;	// Increment the working address to the next byte in the character data.
 	}
@@ -229,7 +237,9 @@ void ssd1306::print_char(unsigned char character, const uint8_t *font, uint8_t s
 	//	Total number of bytes needed calculated from the character width (char_width) multiplied by the number of pages needed for the character height (char_pages).
 	for (uint8_t b = char_data_size; b < (char_pages * char_width); b++)
 	{
-		send_segment(0x00, ( start_page + (b % char_pages) ), ( start_column + (b / char_pages) ));
+		send_segment(	0x00,					// Segment data.
+				start_page + (b % char_pages),		// Page address.
+				start_column + (b / char_pages) );	// Column address.
 	}
 }
 
@@ -243,12 +253,15 @@ void ssd1306::print_string(unsigned char *string, const uint8_t *font, uint8_t s
 	uint8_t character = 0;		// Initialise the character index to be used in the character array.	
 	while(string[character])	// Repeat the while loop until "character" is incremented to the end of the string.
 	{
-		uint8_t current_char_width = pgm_read_byte(&font[ FIRST_CHAR_META + ((string[character]-font_first_char) * 4) + CHAR_WIDTH ]);	// From the character metadata determine width in pixels of the current char.
+		// From the character metadata, determine width in pixels of the current char.
+		uint8_t current_char_width = pgm_read_byte(&font[	FIRST_CHAR_META +				// Start at first character metadata byte.
+									((string[character]-font_first_char) * 4) +	// Skip to the metadatabytes for the current character.
+									CHAR_WIDTH ]);					// Skip to the metadata byte that represents character width.
 
-		print_char(string[character], font, start_page, column);										// Print the current character to the oled.
+		print_char(string[character], font, start_page, column);	// Print the current character to the oled.
 
-		column+=current_char_width;												// Increment the column index by the width of the character.
+		column+=current_char_width;					// Increment the column index by the width of the character.
 
-		character++;														// Increment to the next character in the string.
+		character++;							// Increment to the next character in the string.
 	}
 }
