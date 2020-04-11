@@ -23,7 +23,6 @@ void send_data(double temp, double humi)
 	Serial.print("h");	// 'h' indicates beginning of humidity string data.
 	Serial.print(humi);	// Serial.print converts double to ascii string.
 	Serial.print(";");	// ';' indicates end of data.
-
 }
 
 // Function to update the oled display.
@@ -32,45 +31,47 @@ void update_oled (double temp, double humi)
 	// Create an asci character string in the format - 12.34°C - to indicate current temperature.
 	unsigned char temp_string[8];			// Define a character array that will be printed as a string to show temperature : ##.##°C
 	dtostrf(temp, 5, 2, (char*)temp_string);	// Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
-	temp_string[5]=0xb0;				// Append ° to the string after the actual value.
-	temp_string[6]='C';				// Append C (Celcius) to the string after the ° symbol.
+	temp_string[5]=0xb0;				// Append '°' to the string after the actual value.
+	temp_string[6]='C';				// Append 'C' (Celcius) to the string after the ° symbol.
 	temp_string[7]=0x00;				// Indicates end of character array.
 
 	// Create an asci character string in the format - 12.34% - to indicate current humidity.
 	unsigned char humi_string[7];			// Define a character array that will be printed as a string to show humidity : ##.##%
 	dtostrf(humi, 5, 2, (char*)humi_string);	// Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
-	humi_string[5]='%';				// Append % to the string after the actual value.
+	humi_string[5]='%';				// Append '%' to the string after the actual value.
 	humi_string[6]=0x00;				// Indicates end of character array.
 
+	// Check if the display mode has changed.
 	if(mode != last_mode)		// If the mode has changed since last time.
 	{
 		display.clear_screen();	// Clear the screen.
 		last_mode=mode;		// Update last_mode ready for next comparison.
 	}
 
+	// Alternating display modes are inverted.
 	display.send_command(OLED_INVERSE_DISABLE + (mode & 0b00000001));	// I.e. Inverse enabled by lsb of mode byte.
 
 	switch(mode)
 	{
-		case MODE_NORMAL_INVERSE:
-		case MODE_NORMAL:
-			display.print_string((unsigned char *)"Temperature", Roboto_Black_12, 0, 0);	// Normal modes:
-			display.print_string((unsigned char *)temp_string, Roboto_Black_12, 2, 0);	//  _______________
-			display.print_string((unsigned char*)humi_string, Roboto_Black_12, 4, 87);	// |Temperature    |
-			display.print_string((unsigned char *)"Humidity", Roboto_Black_12, 6, 80);	// |12.34°C        |
-			break;										// |         56.78%|
-													// |_______Humidity|
-		case MODE_LARGE:
-		case MODE_LARGE_INVERSE:
-			display.print_string((unsigned char*)temp_string, Roboto_Black_26, 0, 16);	// Large modes:
-			display.print_string((unsigned char*)humi_string, Roboto_Black_26, 4, 20);	//  _______
-			break;										// |12.34°C|
-													// |56.78_%|
-		case MODE_TEMP_ONLY:
-		case MODE_TEMP_ONLY_INVERSE:
-			display.print_string((unsigned char*)temp_string, Roboto_Black_26, 2, 16);
+		case MODE_NORMAL_INVERSE:								// Normal modes:
+		case MODE_NORMAL:									//  _______________
+			display.print_string((unsigned char *)"Temperature", Roboto_Black_12, 0, 0);	// |Temperature    |
+			display.print_string((unsigned char *)temp_string, Roboto_Black_12, 2, 0);	// |12.34°C        |
+			display.print_string((unsigned char*)humi_string, Roboto_Black_12, 4, 87);	// |         56.78%|
+			display.print_string((unsigned char *)"Humidity", Roboto_Black_12, 6, 80);	// |_______Humidity|
 			break;
-	}
+
+		case MODE_LARGE:									// Large modes:
+		case MODE_LARGE_INVERSE:								//  _________
+			display.print_string((unsigned char*)temp_string, Roboto_Black_26, 0, 16);	// | 12.34°C |
+			display.print_string((unsigned char*)humi_string, Roboto_Black_26, 4, 20);	// |_56.78_%_|
+			break;
+
+		case MODE_TEMP_ONLY:									// Temp only modes:
+		case MODE_TEMP_ONLY_INVERSE:								//  _________
+			display.print_string((unsigned char*)temp_string, Roboto_Black_26, 2, 16);	// |         |
+			break;										// | 12.34°C |
+	}												// |_________|
 }
 
 // Initialise internal timer #2.  This timer is used to trigger an ISR that controls the pulse effect of the external LED.
@@ -140,15 +141,15 @@ void setup(void) {
 	sensor.run_heater(5);
 	display.clear_screen();
 
-	// After all other initialisations are complete, enable the push-button interrupt.
-	pinMode(BUTTON_PIN, INPUT_PULLUP);
-	attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISR_button, LOW);
-
 	// Enable the timer interrupt (for LED pulsing).
 	init_timer();
 
 	// Turn off built-in LED to indicate Pro Trinket has finished "booting".
 	digitalWrite(LED_BUILTIN, LOW);
+
+	// After all other initialisations are complete, enable the push-button interrupt.
+	pinMode(BUTTON_PIN, INPUT_PULLUP);
+	attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISR_button, LOW);
 }
 
 void loop(void)
