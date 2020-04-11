@@ -50,7 +50,7 @@
 #define OLED_ADDRESS_COLUMN				0x21	// (Horizontal Mode) Following two bytes set start and end columns 0 to 127.  Default 0 then 127.
 #define OLED_ADDRESS_PAGE				0x22	// (Horizontal Mode) Following two bytes set start and end pages 0 to 7.  Default 0 then 7.
 
-// Define class for an hdc1080 temperature/humidity sensor.
+// Define class for an oled display with onboard ssd1306 driver..
 class ssd1306
 {
 	public:
