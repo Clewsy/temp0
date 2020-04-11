@@ -4,10 +4,12 @@
 #include "ssd1306.h"	// Define the class and functions for operating an SSD1306 OLED driver.
 
 // Define values for various oled display modes.
-#define MODE_NORMAL		0
-#define MODE_LARGE		1
-#define MODE_NORMAL_INVERSE	2
-#define MODE_LARGE_INVERSE	3
+#define MODE_NORMAL		0	// 0b000
+#define MODE_NORMAL_INVERSE	1	// 0b001
+#define MODE_LARGE		2	// 0b010
+#define MODE_LARGE_INVERSE	3	// 0b011
+#define MODE_TEMP_ONLY		4	// 0b100
+#define MODE_TEMP_ONLY_INVERSE	5	// 0b101
 
 #define BUTTON_PIN	3	// Allocate push-button hardware input pin.  For Pro-Trinket, pin 3 is the only option for hardware interrupt capability.
 #define BUTTON_DEBOUNCE	20	// Duration in milliseconds to register a press of the button.

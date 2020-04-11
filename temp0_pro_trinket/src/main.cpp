@@ -5,9 +5,9 @@ void ISR_button(void)
 {	// Button debounce.
 	if( ((millis() - trigger_time) > BUTTON_DEBOUNCE) && (digitalRead(BUTTON_PIN)==LOW))
 	{
-		mode++;						// Increment to the next mode.
-		if(mode>MODE_LARGE_INVERSE) {mode=MODE_NORMAL;}	// Rollover from the last mode to the first.
-		trigger_time = millis();			// Reset the button debounce timer.
+		mode++;							// Increment to the next mode.
+		if(mode>MODE_TEMP_ONLY_INVERSE) {mode=MODE_NORMAL;}	// Rollover from the last mode to the first.
+		trigger_time = millis();				// Reset the button debounce timer.
 	}
 }
 
@@ -29,34 +29,46 @@ void send_data(double temp, double humi)
 // Function to update the oled display.
 void update_oled (double temp, double humi)
 {
+	// Create an asci character string in the format - 12.34°C - to indicate current temperature.
+	unsigned char temp_string[8];			// Define a character array that will be printed as a string to show temperature : ##.##°C
+	dtostrf(temp, 5, 2, (char*)temp_string);	// Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
+	temp_string[5]=0xb0;				// Append ° to the string after the actual value.
+	temp_string[6]='C';				// Append C (Celcius) to the string after the ° symbol.
+	temp_string[7]=0x00;				// Indicates end of character array.
+
+	// Create an asci character string in the format - 12.34% - to indicate current humidity.
+	unsigned char humi_string[7];			// Define a character array that will be printed as a string to show humidity : ##.##%
+	dtostrf(humi, 5, 2, (char*)humi_string);	// Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
+	humi_string[5]='%';				// Append % to the string after the actual value.
+	humi_string[6]=0x00;				// Indicates end of character array.
+
 	if(mode != last_mode)		// If the mode has changed since last time.
 	{
 		display.clear_screen();	// Clear the screen.
 		last_mode=mode;		// Update last_mode ready for next comparison.
 	}
 
-	display.send_command(OLED_INVERSE_DISABLE + (mode >> 1));	// I.e. Inverse enabled for modes 0b10 & 0b11
+	display.send_command(OLED_INVERSE_DISABLE + (mode & 0b00000001));	// I.e. Inverse enabled by lsb of mode byte.
 
 	switch(mode)
 	{
 		case MODE_NORMAL_INVERSE:
 		case MODE_NORMAL:
-			display.print_string((unsigned char *)"Temperature", Roboto_Mono_12, 0, 0);	// Normal modes:
-			display.print_double(temp, Roboto_Mono_12, 2, 0);				//  _______________
-			display.print_char(0xB0, Roboto_Mono_12, 2, 36); // 0xB0:'°'			// |Temperature    |
-			display.print_char('C', Roboto_Mono_12, 2, 43);					// |12.34°         |
-			display.print_double(humi, Roboto_Mono_12, 4, 86);				// |         56.78%|
-			display.print_char('%', Roboto_Mono_12, 4, 121);				// |_______Humidity|
-			display.print_string((unsigned char *)"Humidity", Roboto_Mono_12, 6, 72);
-			break;
-
+			display.print_string((unsigned char *)"Temperature", Roboto_Black_12, 0, 0);	// Normal modes:
+			display.print_string((unsigned char *)temp_string, Roboto_Black_12, 2, 0);	//  _______________
+			display.print_string((unsigned char*)humi_string, Roboto_Black_12, 4, 87);	// |Temperature    |
+			display.print_string((unsigned char *)"Humidity", Roboto_Black_12, 6, 80);	// |12.34°C        |
+			break;										// |         56.78%|
+													// |_______Humidity|
 		case MODE_LARGE:
 		case MODE_LARGE_INVERSE:
-			display.print_double(temp, Roboto_Mono_25, 0, 0+16);				// Large modes:
-			display.print_char(0xB0, Roboto_Mono_25, 0, 73+16); // 0xB0:'°'			//  _______
-			display.print_char('C', Roboto_Mono_25, 0, 86+16);				// |12.34°C|
-			display.print_double(humi, Roboto_Mono_25, 4, 0+19);				// |56.78_%|
-			display.print_char('%', Roboto_Mono_25, 4, 77+19);
+			display.print_string((unsigned char*)temp_string, Roboto_Black_26, 0, 16);	// Large modes:
+			display.print_string((unsigned char*)humi_string, Roboto_Black_26, 4, 20);	//  _______
+			break;										// |12.34°C|
+													// |56.78_%|
+		case MODE_TEMP_ONLY:
+		case MODE_TEMP_ONLY_INVERSE:
+			display.print_string((unsigned char*)temp_string, Roboto_Black_26, 2, 16);
 			break;
 	}
 }
@@ -121,7 +133,7 @@ void setup(void) {
 	display.draw_box(0, 0, 8, 128);
 	display.draw_box(1, 16, 6, 96);
 	display.draw_box(2, 32, 4, 64);
-	display.print_string((unsigned char *) "temp0", Roboto_Mono_12, 3, 45);
+	display.print_string((unsigned char *) "temp0", Roboto_Black_12, 3, 45);
 	//////////////// End Splash Screen Animation.
 
 	// Run heater while the splash screen is displayed.

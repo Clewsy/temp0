@@ -169,11 +169,13 @@ void ssd1306::test_pattern(void)
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 // Actually send a segment (8-pixel column) to the ssd1306.
-// TO ADD: ERROR-CHECKING - don't want to send segment if out of bounds of the display.
 void ssd1306::send_segment(uint8_t byte, uint8_t page, uint8_t column)
 {
-	set_address(page, column);
-	send_data(byte);
+	if ( (page < 8) & (column < 128) )	//Don't bother sending data if the address is out-of-bounds.
+	{
+		set_address(page, column);
+		send_data(byte);
+	}
 }
 
 // Take a character, obtain the character map data from the defined font, and print that character to the defined co-ordinates.
@@ -242,13 +244,4 @@ void ssd1306::print_string(unsigned char *string, const uint8_t *font, uint8_t s
 
 		character++;														// Increment to the next character in the string.
 	}
-}
-
-// Convert a double to an ascii srting, then print that string to the defined co-ordinates.
-void ssd1306::print_double(double number, const uint8_t *font, uint8_t start_page, uint8_t start_column)
-{
-	char buffer[6];					// Define an array buffer to store the ascii string.
-	dtostrf(number, 5, 2, buffer);			// Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
-
-	print_string((unsigned char *) buffer, font, start_page, start_column);	// Send the string to the print_string function.
 }

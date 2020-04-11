@@ -67,7 +67,6 @@ class ssd1306
 
 		void print_char(unsigned char character, const uint8_t *font, uint8_t start_page, uint8_t start_column);
 		void print_string(unsigned char *string, const uint8_t *font, uint8_t start_page, uint8_t start_column);
-		void print_double(double number, const uint8_t *font, uint8_t start_page, uint8_t start_column);
 
 	private:
 		void send_segment(uint8_t byte, uint8_t page, uint8_t column);
