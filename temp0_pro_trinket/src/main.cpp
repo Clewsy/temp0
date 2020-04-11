@@ -143,7 +143,7 @@ void loop(void)
 {
 	double *sensor_array = sensor.get_sensor_data();		// Update temperature and humidity readings.
 
-	send_data(sensor_array[TEMPERATURE], sensor_array[HUMIDITY]);	// Send temperature and humidity readings to the esp8266.
+	send_data(sensor_array[TEMPERATURE], sensor_array[HUMIDITY]);	// Send temperature and humidity readings to the esp8266 (converts double to string).
 
 	update_oled(sensor_array[TEMPERATURE], sensor_array[HUMIDITY]);	// Update the oled display with the latest  temperature and humidity readings.
 }
