@@ -19,7 +19,7 @@
 #define HDC1080_CONFIG_BIT_H_RES_MSB	1	// Upper config byte; i.e. bit 9.
 #define HDC1080_CONFIG_BIT_H_RES_LSB	0	// Upper config byte; i.e. bit 8.
 
-#define HDC1080_SENSE_DELAY 10	// Delay (in ms) to wait after triggering an update of hdc1080 sensor data, before reading in the data.
+#define HDC1080_SENSE_DELAY 7	// Delay (in ms) to wait after triggering an update of hdc1080 sensor data, before reading in the data.  Refer to datasheet.
 
 // Define class for an hdc1080 temperature/humidity sensor.
 class hdc1080

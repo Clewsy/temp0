@@ -19,7 +19,7 @@
 #define GOING_UP	0	// LED pulse direction, brigtness increasing.
 #define GOING_DOWN	1	// LED pulse direction, brigtness decreasing.
 
-// Global variables
+// Global variables.
 hdc1080 sensor;			// Initialise an hdc1080 sensor called "sensor".  Refer "hdc1080.h".
 ssd1306 display;		// Initialise an oled display with ssd1306 driver called "display".  Refer "ssd1306.h"
 

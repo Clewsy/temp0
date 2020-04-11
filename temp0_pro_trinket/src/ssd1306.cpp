@@ -65,7 +65,9 @@ void ssd1306::send_data(uint8_t data)
 // Actually send a segment (8-pixel column) to the ssd1306.
 void ssd1306::send_segment(uint8_t byte, uint8_t page, uint8_t column)
 {
-	if ( (page < 8) & (column < 128) )	// Don't bother sending data if the address is out-of-bounds.
+	// Don't bother sending data if the address is out-of-bounds.
+	// Note, page & column are 8-bit unsigned.  Rolling over from 255->0 will be sent.
+	if ( (page < 8) && (column < 128) )
 	{
 		set_address(page, column);
 		send_data(byte);
@@ -185,9 +187,11 @@ void ssd1306::test_pattern(void)
 }
 
 // Take a character, obtain the character map data from the defined font, and print that character to the defined co-ordinates.
+// Note, the string must be an array of unsigned characters.  Unsigned allows character integer values up to 255, instead of just 127.
+// Values greater than 127 wanted fo this application due to the use of the degrees symbol '°' which has integer value 176.
+// This is why passing strings in the format "string" requires typecasting to unsigned char: (unsigned char*)"string"
 void ssd1306::print_char(unsigned char character, const uint8_t *font, uint8_t start_page, uint8_t start_column)
 {
-
 //	uint8_t font_width = pgm_read_byte(&&font[FONT_WIDTH]));		// From the font metadata obtain width of characters in pixels (this is max width for non fixed-width fonts).
 	uint8_t font_height = pgm_read_byte(&font[FONT_HEIGHT]);		// From the font metadata obtain height of characters in pixels.
 	uint8_t font_first_char = pgm_read_byte(&font[FONT_FIRST_CHAR]);	// From the font metadata obtain the value of the first included character (often ' ' (i.e. space) or 0x20).
