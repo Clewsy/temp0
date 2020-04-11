@@ -49,7 +49,7 @@ void update_oled (double temp, double humi)
 	}
 
 	// Alternating display modes are inverted.
-	display.send_command(OLED_INVERSE_DISABLE + (mode & 0b00000001));	// I.e. Inverse enabled by lsb of mode byte.
+	display.invert_screen(mode & 0b00000001);	// I.e. Inverse enabled by lsb of mode byte.
 
 	switch(mode)
 	{

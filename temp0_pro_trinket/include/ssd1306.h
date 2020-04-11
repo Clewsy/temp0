@@ -56,22 +56,22 @@ class ssd1306
 	public:
 		ssd1306();
 		void init();
-		void send_command(uint8_t command);
-		void send_command(uint8_t command, uint8_t value);
-		void send_command(uint8_t command, uint8_t value1, uint8_t value2);
-		void set_address(uint8_t page, uint8_t column);
-		void send_data(uint8_t data);
 		void clear_screen(void);
+		void invert_screen(bool invert);
 		void draw_box(uint8_t start_page, uint8_t start_column, uint8_t height, uint8_t width);
 		void test_pattern(void);
-
 		void print_char(unsigned char character, const uint8_t *font, uint8_t start_page, uint8_t start_column);
 		void print_string(unsigned char *string, const uint8_t *font, uint8_t start_page, uint8_t start_column);
 
 	private:
-		void send_segment(uint8_t byte, uint8_t page, uint8_t column);
+		void send_command(uint8_t command);
+		void send_command(uint8_t command, uint8_t value);
+		void send_command(uint8_t command, uint8_t value1, uint8_t value2);
 		void set_page(uint8_t page);
 		void set_column(uint8_t column);
+		void set_address(uint8_t page, uint8_t column);
+		void send_data(uint8_t data);
+		void send_segment(uint8_t byte, uint8_t page, uint8_t column);
 };
 
 

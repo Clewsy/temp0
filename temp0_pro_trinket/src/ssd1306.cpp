@@ -1,11 +1,5 @@
 #include "ssd1306.h"
 
-// Initiate an oled module.
-ssd1306::ssd1306(void)
-{
-//	Wire.begin();	// Communicating with the ssd1306 requires I2C.  Not needed here as wire is initialised in main.
-}
-
 // Send a command to oled driver - single command only.
 void ssd1306::send_command(uint8_t command)
 {
@@ -39,15 +33,6 @@ void ssd1306::send_command(uint8_t command, uint8_t value1, uint8_t value2)
 	Wire.endTransmission(OLED_ADDR);
 }
 
-// Send a data byte - i.e. 8-bits to set/clear the 8 pixels at the current address.
-void ssd1306::send_data(uint8_t data)
-{
-	Wire.beginTransmission(OLED_ADDR);
-	Wire.write(OLED_CONTROL_BYTE_DATA);
-	Wire.write(data);
-	Wire.endTransmission(OLED_ADDR);
-}
-
 // In page addressing mode, valid pages are 0 to 7 (top to bottom).
 void ssd1306::set_page(uint8_t page)
 {
@@ -68,6 +53,55 @@ void ssd1306::set_address(uint8_t page, uint8_t column)
 	set_column(column);
 }
 
+// Send a data byte - i.e. 8-bits to set/clear the 8 pixels at the current address.
+void ssd1306::send_data(uint8_t data)
+{
+	Wire.beginTransmission(OLED_ADDR);
+	Wire.write(OLED_CONTROL_BYTE_DATA);
+	Wire.write(data);
+	Wire.endTransmission(OLED_ADDR);
+}
+
+// Actually send a segment (8-pixel column) to the ssd1306.
+void ssd1306::send_segment(uint8_t byte, uint8_t page, uint8_t column)
+{
+	if ( (page < 8) & (column < 128) )	//Don't bother sending data if the address is out-of-bounds.
+	{
+		set_address(page, column);
+		send_data(byte);
+	}
+}
+
+///////////////////////////////////////Begin public functions
+
+// Define an oled module.
+ssd1306::ssd1306(void)
+{
+//	Wire.begin();	// Communicating with the ssd1306 requires I2C.  Not needed here as wire is initialised in main.
+}
+
+// Initialise the oled display.
+void ssd1306::init(void)
+{
+	send_command(OLED_SET_MULTIPLEX_RATIO, OLED_SET_MULTIPLEX_RATIO_DEFAULT);			// Set MUX ratio.
+	send_command(OLED_SET_DISPLAY_OFFSET, OLED_SET_DISPLAY_OFFSET_DEFAULT);				// Set display offset.
+	send_command(OLED_SET_DISPLAY_START_LINE);							// Set display start line.
+	send_command(OLED_SET_SEGMENT_REMAP_COL0);							// Set segment re-map.  COL 0 is default.
+//	send_command(OLED_SET_SEGMENT_REMAP_COL127);							// Set segment re-map.  COL 0 is default.
+	send_command(OLED_SET_COM_OUTPUT_SCAN_DIR_NORMAL);						// Set COM output scan direction.  Normal is default.
+//	send_command(OLED_SET_COM_OUTPUT_SCAN_DIR_REVERSE);						// Set COM output scan direction.  Normal is default.
+	send_command(OLED_SET_COM_PINS_HARDWARE_CONFIG, OLED_SET_COM_PINS_HARDWARE_CONFIG_DEFAULT);	// Set COM pins hardware configuration.
+	send_command(OLED_SET_CONTRAST, OLED_SET_CONTRAST_DEFAULT);					// Set contrast control.
+	send_command(OLED_ALL_ON_RESUME);								// Disable entire display on.
+	send_command(OLED_INVERSE_DISABLE);								// Set Normal display (i.e. not inverse).
+	send_command(OLED_SET_DISPLAY_CLOCK, OLED_SET_DISPLAY_CLOCK_DEFAULT);				// Set Osc frequency.
+	send_command(OLED_SET_CHARGE_PUMP, OLED_SET_CHARGE_PUMP_DEFAULT);				// Enable charge pump regulator.
+	send_command(OLED_SET_PRECHARGE_PERIOD, OLED_SET_PRECHARGE_PERIOD_DEFAULT);			// Set charge pump pre-charge period.
+	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Set memory addressing mode to Page Addressing Mode.
+	clear_screen();											// Clear any remnant screen memory from last run.
+	send_command(OLED_ON);										// Turn display on.
+}
+
 // Write all zeros to oled data to clear all pixels.
 void ssd1306::clear_screen(void)
 {
@@ -86,6 +120,13 @@ void ssd1306::clear_screen(void)
 		Wire.endTransmission(OLED_ADDR);
 	}
 	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Reset memory addressing mode back to Page Mode.
+}
+
+// Sending true or a one to this function will cause the display to be inverted.  False or a zero will revert the display to normal/non-inverted.
+void ssd1306::invert_screen(bool invert)
+{
+	send_command(OLED_INVERSE_DISABLE + invert);
+
 }
 
 // Draw a box with top left corner at upper pixel of [start page] and column [start_column],
@@ -123,29 +164,7 @@ void ssd1306::draw_box(uint8_t start_page, uint8_t start_column, uint8_t height,
 	}
 }
 
-// Initialise the oled display.
-void ssd1306::init(void)
-{
-	send_command(OLED_SET_MULTIPLEX_RATIO, OLED_SET_MULTIPLEX_RATIO_DEFAULT);			// Set MUX ratio.
-	send_command(OLED_SET_DISPLAY_OFFSET, OLED_SET_DISPLAY_OFFSET_DEFAULT);				// Set display offset.
-	send_command(OLED_SET_DISPLAY_START_LINE);							// Set display start line.
-	send_command(OLED_SET_SEGMENT_REMAP_COL0);							// Set segment re-map.  COL 0 is default.
-//	send_command(OLED_SET_SEGMENT_REMAP_COL127);							// Set segment re-map.  COL 0 is default.
-	send_command(OLED_SET_COM_OUTPUT_SCAN_DIR_NORMAL);						// Set COM output scan direction.  Normal is default.
-//	send_command(OLED_SET_COM_OUTPUT_SCAN_DIR_REVERSE);						// Set COM output scan direction.  Normal is default.
-	send_command(OLED_SET_COM_PINS_HARDWARE_CONFIG, OLED_SET_COM_PINS_HARDWARE_CONFIG_DEFAULT);	// Set COM pins hardware configuration.
-	send_command(OLED_SET_CONTRAST, OLED_SET_CONTRAST_DEFAULT);					// Set contrast control.
-	send_command(OLED_ALL_ON_RESUME);								// Disable entire display on.
-	send_command(OLED_INVERSE_DISABLE);								// Set Normal display (i.e. not inverse).
-	send_command(OLED_SET_DISPLAY_CLOCK, OLED_SET_DISPLAY_CLOCK_DEFAULT);				// Set Osc frequency.
-	send_command(OLED_SET_CHARGE_PUMP, OLED_SET_CHARGE_PUMP_DEFAULT);				// Enable charge pump regulator.
-	send_command(OLED_SET_PRECHARGE_PERIOD, OLED_SET_PRECHARGE_PERIOD_DEFAULT);			// Set charge pump pre-charge period.
-	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Set memory addressing mode to Page Addressing Mode.
-	clear_screen();											// Clear any remnant screen memory from last run.
-	send_command(OLED_ON);										// Turn display on.
-}
-
-// Print a test patter to the display.
+// Print a test pattern to the display.
 void ssd1306::test_pattern(void)
 {
 	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_HORIZONTAL);	// Temporarily set memory addressing mode to Horizontal Mode.
@@ -164,18 +183,6 @@ void ssd1306::test_pattern(void)
 		delay(10);				// Delay for dramatic effect.
 	}
 	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Reset memory addressing mode back to Page Mode.
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-
-// Actually send a segment (8-pixel column) to the ssd1306.
-void ssd1306::send_segment(uint8_t byte, uint8_t page, uint8_t column)
-{
-	if ( (page < 8) & (column < 128) )	//Don't bother sending data if the address is out-of-bounds.
-	{
-		set_address(page, column);
-		send_data(byte);
-	}
 }
 
 // Take a character, obtain the character map data from the defined font, and print that character to the defined co-ordinates.
