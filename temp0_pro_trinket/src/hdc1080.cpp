@@ -58,9 +58,7 @@ double * hdc1080::get_sensor_data(void)
 	Wire.endTransmission(HDC1080_I2C_ADDRESS);
 
 	// Wait long enough for the hdc1080 to update the sensor data.
-//	delay(HDC1080_SENSE_DELAY);
-	uint16_t wait_stop = (millis() + HDC1080_SENSE_DELAY);
-	while (millis() < wait_stop) {}
+	delay(HDC1080_SENSE_DELAY);
 
 	// Read the raw sensor data from the hdc1080.
 	Wire.requestFrom(HDC1080_I2C_ADDRESS, 4, true);	// Provide I2C address, and requested number of bytes to read.
@@ -89,7 +87,7 @@ void hdc1080::run_heater(uint8_t seconds)
 	reg = (reg | (1 << HDC1080_CONFIG_BIT_HEAT));	// Set reg to include heater enable bit.
 	set_config_register(reg);			// Set the config register to the value of reg.
 
-	// Heater only runs when in measurement mode so simulate for requested duration (approx timing):
+	// Heater only runs when in measurement mode, so simulate for requested duration.
 	uint16_t stop_time = millis() + (seconds * 1000); 
 	while (millis() < stop_time)
 	{

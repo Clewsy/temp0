@@ -134,30 +134,26 @@ void ssd1306::invert_screen(bool invert)
 // with dimensions [width] pixels wide by [height]x8 pixels height (i.e. height is in incrments of page = 8-bits).
 void ssd1306::draw_box(uint8_t start_page, uint8_t start_column, uint8_t height, uint8_t width)
 {
-	set_address(start_page, start_column);					// Location of top left box corner.
-
-	send_data(0xFF);							// Left most column, first page. 
+	send_segment(0xFF, start_page, start_column);				// Location of top left box corner.
 
 	for(uint8_t c = start_column; c < (start_column+width-2); c++)		// Run through top row first page for all columns.
 	{
 		if(height>1)	{send_data(0b00000001);}			// Top row only.
-		else		{send_data(0b10000001);}			// Top and bottom fows.
+		else		{send_data(0b10000001);}			// Top and bottom rows (box is a single page in height).
 	}
 
 	send_data(0xFF);							// Right most column, first page.
 
-	if(height>1)								// More than a single page.
+	if(height>1)								// Box is more than a single page in height.
 	{
 		for(uint8_t p = (start_page+1); p < (start_page + height); p++)	// Run through left- and right-most column for all pages between first and last.
 		{
-			set_address(p, start_column);				// Left column.
-			send_data(0xFF);
-			set_address(p, (start_column+width-1));			// Right column.
-			send_data(0xFF);
+			send_segment(0xFF, p, start_column);			// Left column.
+			send_segment(0xFF, p, (start_column+width-1));		// Right column
 		}
-		set_address((start_page+height-1), (start_column));		// Run through bottom row last page for all columns.
-		send_data(0xFF);
-		for(uint8_t c = start_column; c < (start_column+width-2); c++)
+
+		send_segment(0xFF, (start_page+height-1), (start_column));	// Location of bottom left box corner.
+		for(uint8_t c = start_column; c < (start_column+width-2); c++)	// Run through bottom row last page for all columns.
 		{
 			send_data(0b10000000);					// Bottom row only.
 		}
