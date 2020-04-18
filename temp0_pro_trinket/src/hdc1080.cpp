@@ -9,16 +9,16 @@ hdc1080::hdc1080(void)
 // Note, configuration register is actually 16 bits, but the lower 7 bits are all reserved (zero).
 uint8_t hdc1080::read_config_register(void)
 {
-	Wire.beginTransmission(HDC1080_I2C_ADDRESS);
-	Wire.write(HDC1080_ADDRESS_CONF);		// Tell the HDC1080 which register we want to read.
-	Wire.endTransmission(HDC1080_I2C_ADDRESS);
+	Wire.beginTransmission(HDC1080_I2C_ADDRESS);	// Begin an I2C transmission to I2C address of the hdc1080.
+	Wire.write(HDC1080_ADDRESS_CONF);		// Tell the hdc1080 which register we want to read.
+	Wire.endTransmission(HDC1080_I2C_ADDRESS);	// Signal the end of the I2C transmission.
 
 	// Read the raw sensor data from the hdc1080.
 	Wire.requestFrom(HDC1080_I2C_ADDRESS, 2, true);	// Provide I2C address, and requested number of bytes to read.
 	uint8_t config_data = Wire.read();		// Read in the current config data byte.
-	Wire.read();					// HDC1080 config register is 16 bytes, but lower byte is reserved (all zeros) so ignore.
+	Wire.read();					// hdc1080 config register is 16 bits (two bytes), but lower byte is reserved (all zeros) so ignore.
 
-	return config_data;
+	return config_data;				// Return the byte read from the hdc1080.
 }
 
 // Send a command to the configuration register.
@@ -53,9 +53,9 @@ void hdc1080::init(void)
 double * hdc1080::get_sensor_data(void)
 {
 	// Trigger an update of the temerature and humidity readings in the hdc1080.
-	Wire.beginTransmission(HDC1080_I2C_ADDRESS);
-	Wire.write(HDC1080_ADDRESS_TRIG);
-	Wire.endTransmission(HDC1080_I2C_ADDRESS);
+	Wire.beginTransmission(HDC1080_I2C_ADDRESS);	// Begin an I2C transmission to I2C address of the hdc1080.
+	Wire.write(HDC1080_ADDRESS_TRIG);		// Send the byte that triggers an update of the sensor readings.
+	Wire.endTransmission(HDC1080_I2C_ADDRESS);	// Signal the end of the I2C transmission.
 
 	// Wait long enough for the hdc1080 to update the sensor data.
 	delay(HDC1080_SENSE_DELAY);
@@ -92,13 +92,13 @@ void hdc1080::run_heater(uint8_t seconds)
 	while (millis() < stop_time)
 	{
 		// Trigger sensor update.
-		Wire.beginTransmission(HDC1080_I2C_ADDRESS);
-		Wire.write(HDC1080_ADDRESS_TRIG);
-		Wire.endTransmission(HDC1080_I2C_ADDRESS);
+		Wire.beginTransmission(HDC1080_I2C_ADDRESS);	// Begin an I2C transmission to I2C address of the hdc1080.
+		Wire.write(HDC1080_ADDRESS_TRIG);		// Send the byte that triggers an update of the sensor readings.
+		Wire.endTransmission(HDC1080_I2C_ADDRESS);	// Signal the end of the I2C transmission.
 
 		// Read in (and ignore) sensor data bytes.
-		Wire.requestFrom(HDC1080_I2C_ADDRESS, 4, true);
-		for (uint8_t j=0; j<5; j++) { Wire.read(); }
+		Wire.requestFrom(HDC1080_I2C_ADDRESS, 4, true);	// Request transmission of temperature and humidity data.
+		for (uint8_t j=0; j<5; j++) { Wire.read(); }	// Read transmission and temperature data (4 bytes).
 	}
 
 	// Disable the heater.
