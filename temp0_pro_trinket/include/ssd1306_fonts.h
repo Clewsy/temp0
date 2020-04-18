@@ -23,7 +23,7 @@ const uint8_t Roboto_Black_12[] PROGMEM = {
 	0x20,	// First Char: 32
 	0xE0,	// Numbers of Chars: 224
 
-	// Jump Table
+	// Jump table - contains metadata for individual characters.
 //	 +-----------------------MSB of character data address.
 //	 |     +-----------------LSB of character data address.
 //	 |     |     +-----------Number of data bytes used for the character.
@@ -480,14 +480,16 @@ const uint8_t Roboto_Black_12[] PROGMEM = {
 };
 
 
-// With this larget font, the comments after character 176 (the degrees symbol) have been commented to reduce required progmem.
+// With this larger font, the characters after # 176 (the degrees symbol) have been commented to reduce required progmem.
 const uint8_t Roboto_Black_26[] PROGMEM = {
+
+	// Four first bytes are the font metadata.
 	0x18,	// Width: 24
 	0x20,	// Height: 32
 	0x20,	// First Char: 32
-	0x91,	// 145 characters - reduced from generated 224 (0xE0) to reduce required progmem.  Stop at degrees symbol.
+	0x91,	// 145 characters - changed from generated 224 (0xE0) to reduce required progmem.  Stop at degrees symbol.
 
-	// Jump Table
+	// Jump table - contains metadata for individual characters.
 //	 +-----------------------MSB of character data address.
 //	 |     +-----------------LSB of character data address.
 //	 |     |     +-----------Number of data bytes used for the character.
