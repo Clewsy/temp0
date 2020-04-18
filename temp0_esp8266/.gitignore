@@ -1,5 +1,5 @@
 .pio
-.vscode/*
+.vscode
 
 #Don't push wifi essid credentials
 include/credentials.h
