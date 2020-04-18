@@ -20,7 +20,8 @@ ISR(TIMER2_OVF_vect)
 
 // Interrupr sub-routine that is triggered by pressing the push-button.
 void ISR_button(void)
-{	// Button debounce.
+{
+	// Button debounce.
 	if( ((millis() - trigger_time) > BUTTON_DEBOUNCE) && (digitalRead(BUTTON_PIN)==LOW))
 	{
 		mode++;							// Increment to the next mode.
@@ -49,11 +50,11 @@ void update_oled (double temp, double humi)
 	// Create an asci character string in the format - 12.34°C - to indicate current temperature.
 	unsigned char temp_string[8];			// Define a character array that will be printed as a string to show temperature : ##.##°C
 	dtostrf(temp, 5, 2, (char*)temp_string);	// Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
-	temp_string[5]=0xb0;				// Append '°' to the string after the actual value.
+	temp_string[5]=0xB0;				// Append '°' to the string after the actual value.
 	temp_string[6]='C';				// Append 'C' (Celcius) to the string after the ° symbol.
 	temp_string[7]=0x00;				// Indicates end of character array.
 
-	// Create an asci character string in the format - 12.34% - to indicate current humidity.
+	// Create an asci character string in the format - 56.78% - to indicate current humidity.
 	unsigned char humi_string[7];			// Define a character array that will be printed as a string to show humidity : ##.##%
 	dtostrf(humi, 5, 2, (char*)humi_string);	// Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
 	humi_string[5]='%';				// Append '%' to the string after the actual value.
@@ -63,7 +64,7 @@ void update_oled (double temp, double humi)
 	if(mode != last_mode)		// If the mode has changed since last time.
 	{
 		display.clear_screen();	// Clear the screen.
-		last_mode=mode;		// Update last_mode ready for next comparison.
+		last_mode=mode;		// Update last_mode for next comparison.
 	}
 
 	// Alternating display modes are inverted.
@@ -71,8 +72,8 @@ void update_oled (double temp, double humi)
 
 	switch(mode)
 	{
-		case MODE_NORMAL_INVERSE:								// Normal modes:
-		case MODE_NORMAL:									//  _______________
+		case MODE_NORMAL:									// Normal modes:
+		case MODE_NORMAL_INVERSE:								//  _______________
 			display.print_string((unsigned char*)"Temperature", Roboto_Black_12, 0, 0);	// |Temperature    |
 			display.print_string((unsigned char*)temp_string, Roboto_Black_12, 2, 0);	// |12.34°C        |
 			display.print_string((unsigned char*)humi_string, Roboto_Black_12, 4, 87);	// |         56.78%|
@@ -92,13 +93,11 @@ void update_oled (double temp, double humi)
 	}												// |_________|
 }
 
-
-
 void setup(void) {
 
 	// Initialize output pins.
 	pinMode(LED_BUILTIN, OUTPUT);	// LED_BUILTIN - used to indicate when the Pro Trinket is booting/ready.
-	pinMode(LED_EXTERNAL, OUTPUT);	// LED connected to output pin.
+	pinMode(LED_EXTERNAL, OUTPUT);	// External LED connected to a output pin.
 
 	// Turn on built-in LED to indicate Pro Trinket is "booting".
 	digitalWrite(LED_BUILTIN, HIGH);
@@ -129,7 +128,7 @@ void setup(void) {
 	display.print_string((unsigned char*)"temp0", Roboto_Black_12, 3, 45);
 	//////////////// End Splash Screen Animation.
 
-	// Run heater while the splash screen is displayed.
+	// Run heater for 5 seconds while the splash screen is displayed.
 	sensor.run_heater(5);
 	display.clear_screen();
 
