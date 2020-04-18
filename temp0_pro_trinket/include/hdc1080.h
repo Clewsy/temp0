@@ -11,13 +11,13 @@
 #define HDC1080_ADDRESS_HUMI	0x01	// Address of the humidity raw data register.
 #define HDC1080_ADDRESS_CONF	0x02	// Address of the hdc1080 configuration register.
 
-#define HDC1080_CONFIG_BIT_RESET	7	// Upper config byte; i.e. bit 15.
-#define HDC1080_CONFIG_BIT_HEAT		5	// Upper config byte; i.e. bit 13.
-#define HDC1080_CONFIG_BIT_MODE		4	// Upper config byte; i.e. bit 12.
-#define HDC1080_CONFIG_BIT_BATT		3	// Upper config byte; i.e. bit 11.
-#define HDC1080_CONFIG_BIT_T_RES	2	// Upper config byte; i.e. bit 10.
-#define HDC1080_CONFIG_BIT_H_RES_MSB	1	// Upper config byte; i.e. bit 9.
-#define HDC1080_CONFIG_BIT_H_RES_LSB	0	// Upper config byte; i.e. bit 8.
+#define HDC1080_CONFIG_BIT_RESET	7	// Upper config byte; i.e. bit 15.	Set to reset device.
+#define HDC1080_CONFIG_BIT_HEAT		5	// Upper config byte; i.e. bit 13.	Set to enable the internal heater.
+#define HDC1080_CONFIG_BIT_MODE		4	// Upper config byte; i.e. bit 12.	Set to transmit temperature and humidity data together (not separately).
+#define HDC1080_CONFIG_BIT_BATT		3	// Upper config byte; i.e. bit 11.	Battery status, high if <2.8V (read only).
+#define HDC1080_CONFIG_BIT_T_RES	2	// Upper config byte; i.e. bit 10.	Set for temperature 11bit resolution (not 14bit).
+#define HDC1080_CONFIG_BIT_H_RES_MSB	1	// Upper config byte; i.e. bit 9.	Humidity resolution MSB:LSB:
+#define HDC1080_CONFIG_BIT_H_RES_LSB	0	// Upper config byte; i.e. bit 8.	00-14bit, 01-11bit, 10-8bit
 
 #define HDC1080_SENSE_DELAY 7	// Delay (in ms) to wait after triggering an update of hdc1080 sensor data, before reading in the data.  Refer to datasheet.
 
