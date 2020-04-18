@@ -9,13 +9,13 @@
 
 //SSD1306 command bytes.
 //Fundamental Commands:
-#define OLED_SET_CONTRAST				0x81	// Set the contract.  Following command byte defines contrast value from 0 (low) to 255 (high). (0x7F default).
+#define OLED_SET_CONTRAST				0x81	// Set the contrast.  Following command byte defines contrast value from 0 (low) to 255 (high). (0x7F default).
 #define OLED_SET_CONTRAST_DEFAULT			0x7F	// Range from 0x00 (dimest) to 0xFF (brightest).
 #define OLED_SET_CONTRAST_BRIGHT			0xFF	// Highest contrast (brightest).
 #define OLED_ALL_ON_RESUME				0xA4	// Turn on all pixels.
 #define OLED_ALL_ON					0xA5	// Disable "OLED_ALL_ON" (i.e. resume previous graphical output).
-#define OLED_INVERSE_DISABLE				0xA6	// Normal mode.
-#define OLED_INVERSE_ENABLE				0xA7	// Inverse mode.
+#define OLED_INVERSE_DISABLE				0xA6	// Normal mode - setting segment bits turns pixels on.
+#define OLED_INVERSE_ENABLE				0xA7	// Inverse mode - setting segment bits turns pixels off.
 #define OLED_ON 					0xAF	// Turn on (enable) the oled module.
 #define OLED_OFF					0xAE	// Turn off (disable) the oled module.
 //Hardware Configuration Commands:
@@ -30,7 +30,7 @@
 #define OLED_SET_DISPLAY_OFFSET_DEFAULT			0x00	// I.e. 0 offset.
 #define OLED_SET_COM_PINS_HARDWARE_CONFIG		0xDA	// Set COM pin config with next byte.  Default is 0b00100010 - Alternative COM pin config, disable COM left/right remap.
 #define OLED_SET_COM_PINS_HARDWARE_CONFIG_DEFAULT	0x12	// I.e. alternative COM pin config, disable COM left/right remap.
-//Timing and Driving Scheme Commands
+//Timing and Driving Scheme Commands:
 #define OLED_SET_DISPLAY_CLOCK				0xD5	// Set the clock divide ratio/oscillator frequency.  Next byte [7-4] osc freq, [3-0] divide ratio (n +1). 
 #define OLED_SET_DISPLAY_CLOCK_DEFAULT			0x80	// I.e. default settings osc freq 0b10000, divide ratio 1.
 #define OLED_SET_CHARGE_PUMP				0x8D	// Enable or disable inetrnal charge pump regulator with the next byte.
@@ -40,7 +40,7 @@
 #define OLED_SET_VCOMH_DESELECT_LEVEL			0xDB	// Set Vcomh deselect voltage level with next byte (default 0b00100000 = 0x20).
 #define OLED_SET_VCOMH_DESELECT_LEVEL_DEFAULT		0x20	// I.e. ~0.77xVcc.
 #define OLED_NO_OP					0xE3	// Command for no operation.
-//Addressing Setting Commands
+//Addressing Setting Commands:
 #define OLED_SET_MEMORY_ADDRESSING_MODE			0x20	// Set mode of addressing oled pixel data with next byte (default is 0b10 for page mode).
 #define OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT		0x02	// I.e Page addressing mode.
 #define OLED_SET_MEMORY_ADDRESSING_MODE_HORIZONTAL	0x00	// Horizontal addressing mode automnatically rolls index down through pages.
