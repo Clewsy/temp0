@@ -31,22 +31,17 @@ void hdc1080::set_config_register(uint8_t reg)
 	Wire.endTransmission(HDC1080_I2C_ADDRESS);	// Signal the end of the I2C transmission.
 }
 
-// Trigger a soft reset of the hdc1080.
-void hdc1080::reset(void)
-{
-	uint8_t reg = read_config_register();		// Set reg to current value of the config register.
-	reg = (reg | (1 << HDC1080_CONFIG_BIT_RESET));	// Set reg to include high reset bit (self-clears after set).
-	set_config_register(reg);			// Set the config register to the value of reg.
-}
-
 // Initialise the hdc1080.
 void hdc1080::init(void)
 {
-	uint8_t reg = read_config_register();			// Set reg to current value of the config register.
-	reg = (reg | 	(1 << HDC1080_CONFIG_BIT_MODE) |	// OR reg to include desired config bits: Set mode to transmit temperature and humidity data together. 
-			(1 << HDC1080_CONFIG_BIT_T_RES) |	//					  Set temperature resolution to 11 bit.
-			(1 << HDC1080_CONFIG_BIT_H_RES_MSB) );	//					  Set humidity resolution to 8 bit.
-	set_config_register(reg);				// Set the config register to the value of reg.
+	// First put the configuration register into a known set by triggering a soft reset.
+	set_config_register(1 << HDC1080_CONFIG_BIT_RESET);		// Set config register reset bit (self-clears after reset).
+
+	// Config register is now in the default state.  Reading it would result in MSB=0b00010000.  (LSB bits are reserved = 0b00000000)
+	// Now set the desired config bits as required for this application.
+	set_config_register( 	(1 << HDC1080_CONFIG_BIT_MODE) |	// Set mode to transmit temperature and humidity data together (actually set by default). 
+				(1 << HDC1080_CONFIG_BIT_T_RES) |	// Set temperature resolution to 11 bit.
+				(1 << HDC1080_CONFIG_BIT_H_RES_MSB) );	// Set humidity resolution to 8 bit.
 }
 
 // Get the temperature and humidity readings from the hdc1080.

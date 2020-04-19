@@ -15,7 +15,7 @@ ISR(TIMER2_OVF_vect)
 			break;
 	}
 	
-	analogWrite(LED_EXTERNAL, led_value);			// Update the brightness of the external led.
+	analogWrite(LED_EXTERNAL, led_value);	// Update the brightness of the external led.
 }
 
 // Interrupr sub-routine that is triggered by pressing the push-button.
@@ -111,7 +111,6 @@ void setup(void) {
 
 	// Initialise sensor using the hdc1080 header and functions.
 	sensor = hdc1080();
-	sensor.reset();
 	sensor.init();
 
 	// Initialise oled using the ssd1306 header and functions.
