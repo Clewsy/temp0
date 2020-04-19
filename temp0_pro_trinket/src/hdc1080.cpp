@@ -67,16 +67,12 @@ double * hdc1080::get_sensor_data(void)
 	humi_data = (Wire.read() << 8);			// Raw humidity data high byte.
 	humi_data |= Wire.read();			// Raw humidity data low byte.
 
-	// Convert the raw data into human readable values.
-	temp = (((((double)temp_data)*165)/65536)-40);	// Convert float from the raw data: temp = (((temp_data / 2^16) * 165°C) - 40°C)
-	humi = ((((double)humi_data)*100)/65536);	// Convert float from the raw data: humi = ((humi_data / 2^16) * 100%RH)
-
-	// Copy the converted sensor data to the relevant data array elements. 
-	data[TEMPERATURE] = temp;
-	data[HUMIDITY] = humi;
+	// Convert the raw data into human readable values and copy the values to the relevant data array elements. 
+	sensor_values[TEMPERATURE] = (((((double)temp_data)*165)/65536)-40);	// Convert float from the raw data: = (((temp_data / 2^16) * 165°C) - 40°C)
+	sensor_values[HUMIDITY] = ((((double)humi_data)*100)/65536);		// Convert float from the raw data: = ((humi_data / 2^16) * 100%RH)
 
 	// Return the address of the "data" array.
-	return data;
+	return sensor_values;
 }
 
 // Run the internal heater for a specified duration in seconds (approximately).

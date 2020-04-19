@@ -32,11 +32,9 @@ class hdc1080
 		void run_heater(uint8_t seconds);	// Run the internal sensor heater for a specified duration.
 	
 	private:
-		double data[2];				// Array with two elements that will contain floats temp and humi.
+		double sensor_values[2];		// Array with two elements that will contain floats for temperature and humidity.
 		uint16_t temp_data;			// The raw temperature data from the hdc1080.
 		uint16_t humi_data;			// The raw humidity data from the hdc1080.
-		double temp;				// The temperature calculated from temp_data.
-		double humi;				// The humidity calculated from humi_data.
 		uint8_t read_config_register(void);	// Returns 8-bits representing current state of the config register.
 		void set_config_register(uint8_t reg);	// Write 8-bits to the configuration register (upper byte of 16-bits).
 };
