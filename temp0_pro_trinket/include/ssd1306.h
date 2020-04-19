@@ -65,8 +65,8 @@ class ssd1306
 
 	private:
 		void send_command(uint8_t command);
-		void send_command(uint8_t command, uint8_t value);
-		void send_command(uint8_t command, uint8_t value1, uint8_t value2);
+		void send_command(uint8_t command1, uint8_t command2);
+		void send_command(uint8_t command1, uint8_t command2, uint8_t command3);
 		void set_page(uint8_t page);
 		void set_column(uint8_t column);
 		void set_address(uint8_t page, uint8_t column);

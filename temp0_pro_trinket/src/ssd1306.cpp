@@ -9,27 +9,27 @@ void ssd1306::send_command(uint8_t command)
 	Wire.endTransmission(OLED_ADDR);
 }
 
-// Send a command to oled driver - single command followed by command value.
-void ssd1306::send_command(uint8_t command, uint8_t value)
+// Send a command to oled driver - single command followed by command value or a second command.
+void ssd1306::send_command(uint8_t command1, uint8_t command2)
 {
 	Wire.beginTransmission(OLED_ADDR);
 	Wire.write(OLED_CONTROL_BYTE_COMMAND);
-	Wire.write(command);
+	Wire.write(command1);
 	Wire.write(OLED_CONTROL_BYTE_COMMAND);
-	Wire.write(value);
+	Wire.write(command2);
 	Wire.endTransmission(OLED_ADDR);
 }
 
-// Send a command to oled driver - single command followed by two command values.
-void ssd1306::send_command(uint8_t command, uint8_t value1, uint8_t value2)
+// Send a command to oled driver - single command followed by two command values.  Or three serparate commands.
+void ssd1306::send_command(uint8_t command1, uint8_t command2, uint8_t command3)
 {
 	Wire.beginTransmission(OLED_ADDR);
 	Wire.write(OLED_CONTROL_BYTE_COMMAND);
-	Wire.write(command);
+	Wire.write(command1);
 	Wire.write(OLED_CONTROL_BYTE_COMMAND);
-	Wire.write(value1);
+	Wire.write(command2);
 	Wire.write(OLED_CONTROL_BYTE_COMMAND);
-	Wire.write(value2);
+	Wire.write(command3);
 	Wire.endTransmission(OLED_ADDR);
 }
 
