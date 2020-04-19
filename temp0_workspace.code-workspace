@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "temp0_esp8266",
+			"path": "./temp0_esp8266"
+		},
+		{
+			"name": "temp0_pro_trinket",
+			"path": "./temp0_pro_trinket"
+		}
+	],
+	"settings": {}
+}
