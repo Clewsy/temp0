@@ -62,7 +62,7 @@ void ssd1306::send_data(uint8_t data)
 	Wire.endTransmission(OLED_ADDR);
 }
 
-// Actually send a segment (8-pixel column) to the ssd1306.
+// Send a segment (8-pixel column) to the ssd1306.
 void ssd1306::send_segment(uint8_t byte, uint8_t page, uint8_t column)
 {
 	// Don't bother sending data if the address is out-of-bounds.
