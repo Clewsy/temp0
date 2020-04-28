@@ -10,6 +10,8 @@
 #define MODE_LARGE_INVERSE	3	// 0b011
 #define MODE_TEMP_ONLY		4	// 0b100
 #define MODE_TEMP_ONLY_INVERSE	5	// 0b101
+#define MODE_LOGO		6	// 0b110
+#define MODE_LOGO_INVERSE	7	// 0b111
 
 #define BUTTON_PIN	3	// Allocate push-button hardware input pin.  For Pro-Trinket, pin 3 is the only option for hardware interrupt capability.
 #define BUTTON_DEBOUNCE	20	// Duration in milliseconds to register a press of the button (debounce timer).

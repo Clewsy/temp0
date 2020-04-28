@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>		// Needed for I2C communication.
-#include "ssd1306_fonts.h"	// Defines font maps
+#include "ssd1306_fonts.h"	// Defines font maps.
+#include "ssd1306_bitmaps.h"	// Defines image bitmaps.
 
 #define OLED_ADDR			0b0111100	// i2c address of the OLED SSD1306 driver module.
 #define OLED_CONTROL_BYTE_COMMAND 	0b10000000	// Control byte - indicates that the next byte will be a command.
@@ -59,6 +60,7 @@ class ssd1306
 		void clear_screen(void);
 		void invert_screen(bool invert);
 		void draw_box(uint8_t start_page, uint8_t start_column, uint8_t height, uint8_t width);
+		void map_bits(const uint8_t *bitmap);
 		void test_pattern(void);
 		void print_char(unsigned char character, const uint8_t *font, uint8_t start_page, uint8_t start_column);
 		void print_string(unsigned char *string, const uint8_t *font, uint8_t start_page, uint8_t start_column);

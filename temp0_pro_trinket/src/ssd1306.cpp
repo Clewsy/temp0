@@ -265,3 +265,19 @@ void ssd1306::print_string(unsigned char *string, const uint8_t *font, uint8_t s
 		character++;							// Increment to the next character in the string.
 	}
 }
+
+
+// Print a full-resolution (128x64) image to screen..
+void ssd1306::map_bits(const uint8_t *bitmap)
+{
+	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_HORIZONTAL);	// Temporarily set memory addressing mode to Horizontal Mode.
+	send_command(OLED_ADDRESS_PAGE, 0, 7);								// Set page address range.
+	send_command(OLED_ADDRESS_COLUMN, 0, 127);							// Set column address range.
+	
+	for (uint16_t i=0; i<1024; i++)	// In hotizontal addressing mode, each segment write increments the write address from top left to bottom right..
+	{
+		send_data(pgm_read_byte(&bitmap[i]));
+	}
+
+	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Reset memory addressing mode back to Page Mode.
+}
