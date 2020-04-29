@@ -25,7 +25,7 @@ void ISR_button(void)
 	if( ((millis() - trigger_time) > BUTTON_DEBOUNCE) && (digitalRead(BUTTON_PIN)==LOW))
 	{
 		mode++;							// Increment to the next mode.
-		if(mode>MODE_LOGO_INVERSE) {mode=MODE_NORMAL;}	// Rollover from the last mode to the first.
+		if(mode>MODE_LOGO_HAD_INVERSE) {mode=MODE_NORMAL;}	// Rollover from the last mode to the first.
 		trigger_time = millis();				// Reset the button debounce timer.
 	}
 }
@@ -91,9 +91,13 @@ void update_oled (double temp, double humi)
 			display.print_string((unsigned char*)temp_string, Roboto_Black_26, 2, 16);	// |         |
 			break;										// | 12.34°C |
 													// |_________|
-		case MODE_LOGO:
-		case MODE_LOGO_INVERSE:
-			display.map_bits(logo);
+		case MODE_LOGO_CLEWS:
+		case MODE_LOGO_CLEWS_INVERSE:
+			display.map_bits(logo_clews);
+			break;
+		case MODE_LOGO_HAD:
+		case MODE_LOGO_HAD_INVERSE:
+			display.map_bits(logo_had);
 			break;
 	}
 }
@@ -123,10 +127,12 @@ void setup(void) {
 	display.init();
 
 	//////////////// Splash Screen Animation.
-	display.map_bits(logo);
-	delay(1700);
+	display.map_bits(logo_clews);
+	delay(750);
+	display.map_bits(logo_had);
+	delay(750);
 	display.test_pattern();
-	delay(300);
+	delay(250);
 	display.clear_screen();
 	display.draw_box(0, 0, 8, 128);
 	display.print_string((unsigned char*)"temp0", Roboto_Black_12, 3, 45);
