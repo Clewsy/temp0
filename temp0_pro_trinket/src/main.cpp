@@ -1,5 +1,21 @@
 #include "temp0.h"
 
+// Configure the timer interrupt (for LED pulsing).
+void led_pulse_init(void)
+{
+	TCCR2B |= (1 << CS02) | (1 << CS01) | (1 << CS00);	// Set divisor to 1024.
+								// Overflow frequency = 1 / ((1/F)(2^8)(divisor))
+}								// With divisor set to 1024, overflow frequency ~ 61Hz.
+
+// Enable (true) or disable (false) the pulsing LED.
+void led_pulse(bool enable)
+{
+	analogWrite(LED_EXTERNAL, 0);			// If enabling or disabling the LED pulse, always set the analogue brightness value to zero.
+
+	if(enable)	{TIMSK2 |= (1 << TOIE2);}	// Set Timer Overflow Interrupt Enable bit in the Timer 2 Interrupt Mask Register.
+	else		{TIMSK2 &= ~(1 << TOIE2);}	// Clear Timer Overflow Interrupt Enable bit in the Timer 2 Interrupt Mask Register.
+}
+
 // Timer 2 interrupt subroutine vector.  Used to pulse the external LED.
 ISR(TIMER2_OVF_vect)
 {
@@ -17,7 +33,7 @@ void ISR_button(void)
 	if( ((millis() - trigger_time) > BUTTON_DEBOUNCE) && (digitalRead(BUTTON_PIN)==LOW))
 	{
 		mode++;							// Increment to the next mode.
-		if(mode>MODE_LOGO_HAD_INVERSE) {mode=MODE_NORMAL;}	// Rollover from the last mode to the first.
+		if(mode>MODE_BLANK) {mode=MODE_NORMAL;}	// Rollover from the last mode to the first.
 		trigger_time = millis();				// Reset the button debounce timer.
 	}
 }
@@ -56,6 +72,10 @@ void update_oled (double temp, double humi)
 	if(mode != last_mode)		// If the mode has changed since last time.
 	{
 		display.clear_screen();	// Clear the screen.
+
+		if (mode>=MODE_BLANK)	{led_pulse(false);}	// If changed to blank screen mode, disable LED pulse.
+		else			{led_pulse(true);}	// Otherwise, enable LED pulse.
+
 		last_mode=mode;		// Update last_mode for next comparison.
 	}
 
@@ -83,16 +103,19 @@ void update_oled (double temp, double humi)
 			display.print_string((unsigned char*)temp_string, Roboto_Black_26, 2, 16);	// |         |
 			break;										// | 12.34°C |
 													// |_________|
-		case MODE_LOGO_CLEWS:
+		case MODE_LOGO_CLEWS:			// No data readout, just show an image (clews logo).
 		case MODE_LOGO_CLEWS_INVERSE:
 			display.map_bits(logo_clews);
 			break;
-		case MODE_LOGO_HAD:
+		case MODE_LOGO_HAD:			// No data readout, just show an image (HackADay logo).
 		case MODE_LOGO_HAD_INVERSE:
 			display.map_bits(logo_had);
 			break;
+		case MODE_BLANK:			// Blank screen.
+			display.clear_screen();
 	}
 }
+
 
 void setup(void) {
 
@@ -134,11 +157,8 @@ void setup(void) {
 	sensor.run_heater(5);
 	display.clear_screen();
 
-	// Enable the timer interrupt (for LED pulsing).
-	TIMSK2 |= (1 << TOIE2);	// Set Timer Overflow Interrupt Enable bit in the Timer 2 Interrupt Mask Register.
-	TCCR2B |= (1 << CS02) | (1 << CS01) | (1 << CS00);	// Set divisor to 1024.
-								// Overflow frequency = 1 / ((1/F)(2^8)(divisor))
-								// With divisor set to 1024, overflow frequency ~ 61Hz.
+	// Initialise the timer/counter interrupt that will control the pulsing LED.
+	led_pulse_init();
 
 	// Turn off built-in LED to indicate Pro Trinket has finished "booting".
 	digitalWrite(LED_BUILTIN, LOW);

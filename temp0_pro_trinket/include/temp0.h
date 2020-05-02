@@ -14,6 +14,7 @@
 #define MODE_LOGO_CLEWS_INVERSE	7	// 0b0111
 #define MODE_LOGO_HAD		8	// 0b1000
 #define MODE_LOGO_HAD_INVERSE	9	// 0b1001
+#define MODE_BLANK		10	// 0b1010
 
 #define BUTTON_PIN	3	// Allocate push-button hardware input pin.  For Pro-Trinket, pin 3 is the only option for hardware interrupt capability.
 #define BUTTON_DEBOUNCE	20	// Duration in milliseconds to register a press of the button (debounce timer).
@@ -21,6 +22,8 @@
 #define LED_EXTERNAL	6	// LED connected to this pin.  On Pro-Trinket, this pin has analog out capability.
 #define LED_PULSE_SPEED	8	// Increment size for increasing/decreasing led brightness.
 #define LED_MAX_VALUE	255	// Maximum brightness value of external LED (analogue out 0 to 255).
+#define LED_ON
+#define LED_OFF
 
 // Global variables.
 hdc1080 sensor;			// Initialise an hdc1080 sensor called "sensor".  Refer "hdc1080.h".
