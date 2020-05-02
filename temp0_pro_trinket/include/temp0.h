@@ -19,9 +19,8 @@
 #define BUTTON_DEBOUNCE	20	// Duration in milliseconds to register a press of the button (debounce timer).
 
 #define LED_EXTERNAL	6	// LED connected to this pin.  On Pro-Trinket, this pin has analog out capability.
-#define LED_PULSE_SPEED	16	// Increment size for increasing/decreasing led brightness.
-#define GOING_UP	0	// LED pulse direction, brigtness increasing.
-#define GOING_DOWN	1	// LED pulse direction, brigtness decreasing.
+#define LED_PULSE_SPEED	8	// Increment size for increasing/decreasing led brightness.
+#define LED_MAX_VALUE	255	// Maximum brightness value of external LED (analogue out 0 to 255).
 
 // Global variables.
 hdc1080 sensor;			// Initialise an hdc1080 sensor called "sensor".  Refer "hdc1080.h".
@@ -31,4 +30,4 @@ uint8_t mode = MODE_NORMAL;		// Initialise the "start-up" mode.
 uint8_t last_mode = MODE_NORMAL;	// Initialise "last_mode" - needed to determine if mode has changed.
 long trigger_time = 0;			// Initialise the timer comparator for debouncing a button press.
 uint8_t led_value = 0;			// Initialise the brightnes value of the external led.
-uint8_t led_pulse_dir = GOING_UP;	// Initialise direction of led pulse.
+int8_t led_pulse_dir = 1;		// Initialise direction of led pulse.  1 for brightness increasing, -1 for brightness decreasing.

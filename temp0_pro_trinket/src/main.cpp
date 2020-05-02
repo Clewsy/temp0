@@ -3,19 +3,11 @@
 // Timer 2 interrupt subroutine vector.  Used to pulse the external LED.
 ISR(TIMER2_OVF_vect)
 {
-	switch(led_pulse_dir)	// Increment or decrement the value depending on the direction it's currently moving.
-	{
-		case GOING_UP:
-			if (led_value>(255-LED_PULSE_SPEED))	{led_pulse_dir=GOING_DOWN;}
-			else					{led_value+=LED_PULSE_SPEED;}
-			break;
-		case GOING_DOWN:
-			if (led_value==0)			{led_pulse_dir=GOING_UP;}
-			else					{led_value-=LED_PULSE_SPEED;}
-			break;
-	}
-	
-	analogWrite(LED_EXTERNAL, led_value);	// Update the brightness of the external led.
+	led_value = (led_value + (led_pulse_dir * LED_PULSE_SPEED));						// Increment or decrement led_value by LED_PULSE_SPEED.
+
+	if ((led_value>(LED_MAX_VALUE-LED_PULSE_SPEED)) | (led_value==0)) {led_pulse_dir = -led_pulse_dir;}	// Reverse direction at either extreme of led_value.
+
+	analogWrite(LED_EXTERNAL, led_value);									// Update the brightness of the external led.
 }
 
 // Interrupr sub-routine that is triggered by pressing the push-button.
