@@ -1,6 +1,5 @@
 # temp0
-A temperature/humidity sensor that provides live readings on an oled display and also on a web page served over WiFi.
-Temperature and humidity readouts are displayed directly on an OLED screen.
+A temperature/humidity sensor that provides live readings over WiFi and via an oled display.
 The device connects to a local network over WiFi and serves the following:
 - Pretty html page at root:
 	- http://temp0
@@ -13,7 +12,7 @@ The device connects to a local network over WiFi and serves the following:
 	- http://temp0/humi
 	- http://temp0/h
 
-I made a custom PCB and put everything in an enclosure with a transperant lid so as to show off the special Pro Trinket I've had sitting in a drawer for six years!
+All components are on a custom PCB and inside an enclosure with a transperant lid so as to show off the special-edition HackADay 10-year anniversary Pro Trinket!
 
 More info can be found [here][link_clews_projects_temp0].
 
