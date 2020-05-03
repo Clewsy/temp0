@@ -32,9 +32,9 @@ void ISR_button(void)
 	// Button debounce.
 	if( ((millis() - trigger_time) > BUTTON_DEBOUNCE) && (digitalRead(BUTTON_PIN)==LOW))
 	{
-		mode++;							// Increment to the next mode.
-		if(mode>MODE_BLANK) {mode=MODE_NORMAL;}	// Rollover from the last mode to the first.
-		trigger_time = millis();				// Reset the button debounce timer.
+		mode++;						// Increment to the next mode.
+		if(mode>MODE_BLANK) {mode=MODE_NORMAL;}		// Rollover from the last mode to the first.
+		trigger_time = millis();			// Reset the button debounce timer.
 	}
 }
 
@@ -103,11 +103,11 @@ void update_oled (double temp, double humi)
 			display.print_string((unsigned char*)temp_string, Roboto_Black_26, 2, 16);	// |         |
 			break;										// | 12.34°C |
 													// |_________|
-		case MODE_LOGO_CLEWS:			// No data readout, just show an image (clews logo).
+		case MODE_LOGO_CLEWS:			// No data readout, just show clews logo.
 		case MODE_LOGO_CLEWS_INVERSE:
 			display.map_bits(logo_clews);
 			break;
-		case MODE_LOGO_HAD:			// No data readout, just show an image (HackADay logo).
+		case MODE_LOGO_HAD:			// No data readout, just show HackADay logo.
 		case MODE_LOGO_HAD_INVERSE:
 			display.map_bits(logo_had);
 			break;
@@ -157,8 +157,9 @@ void setup(void) {
 	sensor.run_heater(5);
 	display.clear_screen();
 
-	// Initialise the timer/counter interrupt that will control the pulsing LED.
+	// Initialise the timer/counter interrupt that will control the pulsing LED, then enable pulsing.
 	led_pulse_init();
+	led_pulse(true);
 
 	// Turn off built-in LED to indicate Pro Trinket has finished "booting".
 	digitalWrite(LED_BUILTIN, LOW);

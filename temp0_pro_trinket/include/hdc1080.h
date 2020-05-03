@@ -21,6 +21,9 @@
 
 #define HDC1080_SENSE_DELAY 7	// Delay (in ms) to wait after triggering an update of hdc1080 sensor data, before reading in the data.  Refer to datasheet.
 
+#define TEMP_BODGE -4		// Bodge factor to adjust the temperature - allow for offset due to local ambient conditions.S
+
+
 // Define class for an hdc1080 temperature/humidity sensor.
 class hdc1080
 {

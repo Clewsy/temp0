@@ -29,8 +29,8 @@
 hdc1080 sensor;			// Initialise an hdc1080 sensor called "sensor".  Refer "hdc1080.h".
 ssd1306 display;		// Initialise an oled display with ssd1306 driver called "display".  Refer "ssd1306.h"
 
-uint8_t mode = MODE_NORMAL;		// Initialise the "start-up" mode.
-uint8_t last_mode = MODE_NORMAL;	// Initialise "last_mode" - needed to determine if mode has changed.
-long trigger_time = 0;			// Initialise the timer comparator for debouncing a button press.
-uint8_t led_value = 0;			// Initialise the brightnes value of the external led.
-int8_t led_pulse_dir = 1;		// Initialise direction of led pulse.  1 for brightness increasing, -1 for brightness decreasing.
+uint8_t mode = MODE_LARGE;	// Initialise the "start-up" mode.
+uint8_t last_mode = mode;	// Initialise "last_mode" - needed to determine if mode has changed.
+long trigger_time = 0;		// Initialise the timer comparator for debouncing a button press.
+uint8_t led_value = 0;		// Initialise the brightnes value of the external led.
+int8_t led_pulse_dir = 1;	// Initialise direction of led pulse.  1 for brightness increasing, -1 for brightness decreasing.

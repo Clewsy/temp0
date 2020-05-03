@@ -1,4 +1,4 @@
-# temp0 - THIS PROJECT IS IN DEVELOPMENT
+# temp0
 A temperature/humidity sensor that provides live readings on an oled display and also on a web page served over WiFi.
 Temperature and humidity readouts are displayed directly on an OLED screen.
 The device connects to a local network over WiFi and serves the following:
@@ -37,6 +37,32 @@ The final system consists of the following components:
 - SSD1306 OLED module - also communicates over I2C - used as a local display for temperature/humidity readings.
 - Miscellaneous components for power conversion (5V->3.3V), filtering, IO pull-ups, etc.
 
+## Repository
+This repo contains
+- [data][link_repo_temp0_data] - datasheets I referenced to write relevant code and create custom KiCAD footprints.
+- [images][link_repo_temp0_images] - photos of the final project.
+- [temp0_esp8266][link_repo_temp0_esp8266] - code written for the ESP8266/ESP-01 module.
+- [temp0_pro_trinket][link_repo_temp0_pro_trinket] - code written for the Pro Trinket module.
+- [temp0_schematic][link_repo_temp0_schematic] - KiCAD files including the schematic and PCB layout.  Library includes some custom parts (ESP-01, Pro-Trinket, HDC1080, OLED).
+- [temp0_workspace.code-workspace][link_repo_temp0_workspace] - Workspace structure for VSCode including PlatformIO configurations for working with the ESP8266/ESP-01 and the Pro-Trinket 5V.
+
+## Gallery
+![Demo of startup][image_temp0_demo_startup]
+![Demo of display modes][image_temp0_demo_modes]
+![Assembled unit][image_temp0_assembled]
+![Buttoned up][image_temp0_complete]
+
 [link_web_hassio]:https://www.home-assistant.io/hassio/
 [link_web_hackaday_pro_trinket]:https://hackaday.com/2014/10/10/10th-anniversary-trinket-pro-now-in-the-hackaday-store/
 [link_clews_projects_temp0]:https://clews.pro/projects/temp0.php
+[link_repo_temp0_data]:/data
+[link_repo_temp0_images]:/images
+[link_repo_temp0_esp8266]:/temp0_esp8266
+[link_repo_temp0_pro_trinket]:/temp0_pro_trinket
+[link_repo_temp0_schematic]:/temp0_schematic
+[link_repo_temp0_workspace]:/temp0_workspace.code-workspace
+
+[image_temp0_demo_startup]:/images/temp0_demo_startup.gif
+[image_temp0_demo_modes]:/images/temp0_demo_modes.gif
+[image_temp0_assembled]:/images/temp0_assembled.jpg
+[image_temp0_complete]:/images/temp0_complete.jpg

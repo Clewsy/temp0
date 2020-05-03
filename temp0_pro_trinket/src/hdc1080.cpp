@@ -63,8 +63,8 @@ double * hdc1080::get_sensor_data(void)
 	humi_data |= Wire.read();			// Raw humidity data low byte.
 
 	// Convert the raw data into human readable values and copy the values to the relevant data array elements. 
-	sensor_values[TEMPERATURE] = (((((double)temp_data)*165)/65536)-40);	// Convert float from the raw data: = (((temp_data / 2^16) * 165°C) - 40°C)
-	sensor_values[HUMIDITY] = ((((double)humi_data)*100)/65536);		// Convert float from the raw data: = ((humi_data / 2^16) * 100%RH)
+	sensor_values[TEMPERATURE] = (((((double)temp_data)*165)/65536)-40+TEMP_BODGE);	// Convert float from the raw data: = (((temp_data / 2^16) * 165°C) - 40°C)
+	sensor_values[HUMIDITY] = ((((double)humi_data)*100)/65536);			// Convert float from the raw data: = ((humi_data / 2^16) * 100%RH)
 
 	// Return the address of the "data" array.
 	return sensor_values;
