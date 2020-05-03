@@ -38,7 +38,7 @@ The final system consists of the following components:
 - Miscellaneous components for power conversion (5V->3.3V), filtering, IO pull-ups, etc.
 
 ## Repository
-This repo contains
+This repo contains:
 - [data][link_repo_temp0_data] - datasheets I referenced to write relevant code and create custom KiCAD footprints.
 - [images][link_repo_temp0_images] - photos of the final project.
 - [temp0_esp8266][link_repo_temp0_esp8266] - code written for the ESP8266/ESP-01 module.
@@ -47,10 +47,20 @@ This repo contains
 - [temp0_workspace.code-workspace][link_repo_temp0_workspace] - Workspace structure for VSCode including PlatformIO configurations for working with the ESP8266/ESP-01 and the Pro-Trinket 5V.
 
 ## Gallery
+### Start-up animation.
 ![Demo of startup][image_temp0_demo_startup]
+
+### Cycling through different display modes.
 ![Demo of display modes][image_temp0_demo_modes]
+
+### Assembled PCB.
 ![Assembled unit][image_temp0_assembled]
+
+### In an enclosure.
 ![Buttoned up][image_temp0_complete]
+
+### Web interface.
+![WebUI][image_temp0_webui]
 
 [link_web_hassio]:https://www.home-assistant.io/hassio/
 [link_web_hackaday_pro_trinket]:https://hackaday.com/2014/10/10/10th-anniversary-trinket-pro-now-in-the-hackaday-store/
@@ -66,3 +76,4 @@ This repo contains
 [image_temp0_demo_modes]:/images/temp0_demo_modes.gif
 [image_temp0_assembled]:/images/temp0_assembled.jpg
 [image_temp0_complete]:/images/temp0_complete.jpg
+[image_temp0_webui]:/images/temp0_webui.png
