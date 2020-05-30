@@ -4,12 +4,12 @@
 #include "ssd1306.h"	// Define the class and functions for operating an SSD1306 OLED driver.
 
 // Define values for various oled display modes.
-#define MODE_NORMAL		0	// 0b0000
-#define MODE_NORMAL_INVERSE	1	// 0b0001
-#define MODE_LARGE		2	// 0b0010
-#define MODE_LARGE_INVERSE	3	// 0b0011
-#define MODE_TEMP_ONLY		4	// 0b0100
-#define MODE_TEMP_ONLY_INVERSE	5	// 0b0101
+#define MODE_LARGE		0	// 0b0000
+#define MODE_LARGE_INVERSE	1	// 0b0001
+#define MODE_TEMP_ONLY		2	// 0b0010
+#define MODE_TEMP_ONLY_INVERSE	3	// 0b0011
+#define MODE_NORMAL		4	// 0b0100
+#define MODE_NORMAL_INVERSE	5	// 0b0101
 #define MODE_LOGO_CLEWS		6	// 0b0110
 #define MODE_LOGO_CLEWS_INVERSE	7	// 0b0111
 #define MODE_LOGO_HAD		8	// 0b1000
@@ -20,8 +20,8 @@
 #define BUTTON_DEBOUNCE	20	// Duration in milliseconds to register a press of the button (debounce timer).
 
 #define LED_EXTERNAL	6	// LED connected to this pin.  On Pro-Trinket, this pin has analog out capability.
-#define LED_PULSE_SPEED	8	// Increment size for increasing/decreasing led brightness.
-#define LED_MAX_VALUE	255	// Maximum brightness value of external LED (analogue out 0 to 255).
+#define LED_PULSE_SPEED	1	// Increment size for increasing/decreasing led brightness.
+#define LED_MAX_VALUE	20	// Maximum brightness value of external LED (analogue out 0 to 255).
 #define LED_ON
 #define LED_OFF
 

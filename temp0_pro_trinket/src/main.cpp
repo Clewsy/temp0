@@ -32,9 +32,9 @@ void ISR_button(void)
 	// Button debounce.
 	if( ((millis() - trigger_time) > BUTTON_DEBOUNCE) && (digitalRead(BUTTON_PIN)==LOW))
 	{
-		mode++;						// Increment to the next mode.
-		if(mode>MODE_BLANK) {mode=MODE_NORMAL;}		// Rollover from the last mode to the first.
-		trigger_time = millis();			// Reset the button debounce timer.
+		mode++;				// Increment to the next mode.
+		if(mode>MODE_BLANK) {mode=0;}	// Rollover from the last mode to the first.
+		trigger_time = millis();	// Reset the button debounce timer.
 	}
 }
 
