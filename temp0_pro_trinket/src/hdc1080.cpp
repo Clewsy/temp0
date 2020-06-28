@@ -35,7 +35,7 @@ void hdc1080::set_config_register(uint8_t reg)
 void hdc1080::init(void)
 {
 	// First put the configuration register into a known set by triggering a soft reset.
-	set_config_register(1 << HDC1080_CONFIG_BIT_RESET);		// Set config register reset bit (self-clears after reset).
+	set_config_register(1 << HDC1080_CONFIG_BIT_RESET);		// Set config register reset bit (self-clears after set).
 
 	// Config register is now in the default state.  Reading it would result in MSB=0b00010000.  (LSB bits are reserved = 0b00000000)
 	// Now set the desired config bits as required for this application.
@@ -45,7 +45,7 @@ void hdc1080::init(void)
 }
 
 // Get the temperature and humidity readings from the hdc1080.
-double * hdc1080::get_sensor_data(void)
+double *hdc1080::get_sensor_data(void)
 {
 	// Trigger an update of the temerature and humidity readings in the hdc1080.
 	Wire.beginTransmission(HDC1080_I2C_ADDRESS);	// Begin an I2C transmission to I2C address of the hdc1080.
@@ -63,8 +63,8 @@ double * hdc1080::get_sensor_data(void)
 	humi_data |= Wire.read();			// Raw humidity data low byte.
 
 	// Convert the raw data into human readable values and copy the values to the relevant data array elements. 
-	sensor_values[TEMPERATURE] = (((((double)temp_data)*165)/65536)-40+TEMP_BODGE);	// Convert float from the raw data: = (((temp_data / 2^16) * 165°C) - 40°C)
-	sensor_values[HUMIDITY] = ((((double)humi_data)*100)/65536);			// Convert float from the raw data: = ((humi_data / 2^16) * 100%RH)
+	sensor_values[TEMPERATURE] = (((((double)temp_data) * 165) / 65536) - 40 + TEMP_BODGE);	// Convert float from raw: = (((temp_data / 2^16) * 165°C) - 40°C)
+	sensor_values[HUMIDITY] = ((((double)humi_data) * 100) / 65536);			// Convert float from raw: = ((humi_data / 2^16) * 100%RH)
 
 	// Return the address of the "data" array.
 	return sensor_values;
@@ -89,7 +89,7 @@ void hdc1080::run_heater(uint8_t seconds)
 
 		// Read in (and ignore) sensor data bytes.
 		Wire.requestFrom(HDC1080_I2C_ADDRESS, 4, true);	// Request transmission of temperature and humidity data.
-		for (uint8_t j=0; j<5; j++) { Wire.read(); }	// Read transmission and temperature data (4 bytes).
+		for (uint8_t i = 0; i < 5; i++) Wire.read();	// Read (and ignore) data (4 bytes).
 	}
 
 	// Disable the heater.

@@ -12,8 +12,8 @@ void led_pulse(bool enable)
 {
 	analogWrite(LED_EXTERNAL, 0);			// If enabling or disabling the LED pulse, always set the analogue brightness value to zero.
 
-	if(enable)	{TIMSK2 |= (1 << TOIE2);}	// Set Timer Overflow Interrupt Enable bit in the Timer 2 Interrupt Mask Register.
-	else		{TIMSK2 &= ~(1 << TOIE2);}	// Clear Timer Overflow Interrupt Enable bit in the Timer 2 Interrupt Mask Register.
+	if(enable)	TIMSK2 |= (1 << TOIE2);		// Set Timer Overflow Interrupt Enable bit in the Timer 2 Interrupt Mask Register.
+	else		TIMSK2 &= ~(1 << TOIE2);	// Clear Timer Overflow Interrupt Enable bit in the Timer 2 Interrupt Mask Register.
 }
 
 // Timer 2 interrupt subroutine vector.  Used to pulse the external LED.
@@ -21,7 +21,7 @@ ISR(TIMER2_OVF_vect)
 {
 	led_value = (led_value + (led_pulse_dir * LED_PULSE_SPEED));						// Increment or decrement led_value by LED_PULSE_SPEED.
 
-	if ((led_value>(LED_MAX_VALUE-LED_PULSE_SPEED)) | (led_value==0)) {led_pulse_dir = -led_pulse_dir;}	// Reverse direction at either extreme of led_value.
+	if((led_value > (LED_MAX_VALUE-LED_PULSE_SPEED)) | (led_value == 0)) led_pulse_dir = -led_pulse_dir;	// Reverse direction at either extreme of led_value.
 
 	analogWrite(LED_EXTERNAL, led_value);									// Update the brightness of the external led.
 }
@@ -30,10 +30,10 @@ ISR(TIMER2_OVF_vect)
 void ISR_button(void)
 {
 	// Button debounce.
-	if( ((millis() - trigger_time) > BUTTON_DEBOUNCE) && (digitalRead(BUTTON_PIN)==LOW))
+	if(((millis() - trigger_time) > BUTTON_DEBOUNCE) && (digitalRead(BUTTON_PIN)==LOW))
 	{
 		mode++;				// Increment to the next mode.
-		if(mode>MODE_BLANK) {mode=0;}	// Rollover from the last mode to the first.
+		if(mode > MODE_BLANK) mode = 0;	// Rollover from the last mode to the first.
 		trigger_time = millis();	// Reset the button debounce timer.
 	}
 }
@@ -58,25 +58,25 @@ void update_oled (double temp, double humi)
 	// Create an asci character string in the format - 12.34°C - to indicate current temperature.
 	unsigned char temp_string[8];			// Define a character array that will be printed as a string to show temperature : ##.##°C
 	dtostrf(temp, 5, 2, (char*)temp_string);	// Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
-	temp_string[5]=0xB0;				// Append '°' to the string after the actual value.
-	temp_string[6]='C';				// Append 'C' (Celcius) to the string after the ° symbol.
-	temp_string[7]=0x00;				// Indicates end of character array.
+	temp_string[5] = 0xB0;				// Append '°' to the string after the actual value.
+	temp_string[6] = 'C';				// Append 'C' (Celcius) to the string after the ° symbol.
+	temp_string[7] = 0x00;				// Indicates end of character array.
 
 	// Create an asci character string in the format - 56.78% - to indicate current humidity.
 	unsigned char humi_string[7];			// Define a character array that will be printed as a string to show humidity : ##.##%
 	dtostrf(humi, 5, 2, (char*)humi_string);	// Double-to-String function.  Syntax dtostrf(double, min_string_length, num_post_decimal_values, char_array_addr).
-	humi_string[5]='%';				// Append '%' to the string after the actual value.
-	humi_string[6]=0x00;				// Indicates end of character array.
+	humi_string[5] = '%';				// Append '%' to the string after the actual value.
+	humi_string[6] = 0x00;				// Indicates end of character array.
 
 	// Check if the display mode has changed.
-	if(mode != last_mode)		// If the mode has changed since last time.
+	if(mode != last_mode)
 	{
-		display.clear_screen();	// Clear the screen.
+		display.map_bits(BLANK, sizeof(BLANK));		// Clear the screen.
 
-		if (mode>=MODE_BLANK)	{led_pulse(false);}	// If changed to blank screen mode, disable LED pulse.
-		else			{led_pulse(true);}	// Otherwise, enable LED pulse.
+		if(mode >= MODE_BLANK)	led_pulse(false);	// If changed to blank screen mode, disable LED pulse.
+		else			led_pulse(true);	// Otherwise, enable LED pulse.
 
-		last_mode=mode;		// Update last_mode for next comparison.
+		last_mode = mode;				// Update last_mode for next comparison.
 	}
 
 	// Alternating display modes are inverted.
@@ -105,20 +105,33 @@ void update_oled (double temp, double humi)
 													// |_________|
 		case MODE_LOGO_CLEWS:			// No data readout, just show clews logo.
 		case MODE_LOGO_CLEWS_INVERSE:
-			display.map_bits(logo_clews);
+			display.map_bits(LOGO_CLEWS, sizeof(LOGO_CLEWS));
 			break;
 		case MODE_LOGO_HAD:			// No data readout, just show HackADay logo.
 		case MODE_LOGO_HAD_INVERSE:
-			display.map_bits(logo_had);
+			display.map_bits(LOGO_HAD, sizeof(LOGO_HAD));
 			break;
 		case MODE_BLANK:			// Blank screen.
-			display.clear_screen();
+			display.map_bits(BLANK, sizeof(BLANK));
 	}
 }
 
+// Display start-up animation.
+void splash_screen(void)
+{
+	display.map_bits(LOGO_CLEWS, sizeof(LOGO_CLEWS));
+	delay(750);
+	display.map_bits(LOGO_HAD, sizeof(LOGO_HAD));
+	delay(750);
+	display.test_pattern();
+	delay(250);
+	display.map_bits(BLANK, sizeof(BLANK));
+	display.draw_box(0, 0, 8, 128);
+	display.print_string((unsigned char*)"temp0", Roboto_Black_12, 3, 45);
+}
 
-void setup(void) {
-
+void setup(void)
+{
 	// Initialize output pins.
 	pinMode(LED_BUILTIN, OUTPUT);	// LED_BUILTIN - used to indicate when the Pro Trinket is booting/ready.
 	pinMode(LED_EXTERNAL, OUTPUT);	// External LED connected to a output pin.
@@ -141,21 +154,12 @@ void setup(void) {
 	display = ssd1306();
 	display.init();
 
-	//////////////// Splash Screen Animation.
-	display.map_bits(logo_clews);
-	delay(750);
-	display.map_bits(logo_had);
-	delay(750);
-	display.test_pattern();
-	delay(250);
-	display.clear_screen();
-	display.draw_box(0, 0, 8, 128);
-	display.print_string((unsigned char*)"temp0", Roboto_Black_12, 3, 45);
-	//////////////// End Splash Screen Animation.
+	// Display start-up animation.
+	splash_screen();
 
 	// Run heater for 5 seconds while the splash screen is displayed.
 	sensor.run_heater(5);
-	display.clear_screen();
+	display.map_bits(BLANK, sizeof(BLANK));
 
 	// Initialise the timer/counter interrupt that will control the pulsing LED, then enable pulsing.
 	led_pulse_init();
@@ -175,6 +179,6 @@ void loop(void)
 
 	send_data(sensor_array[TEMPERATURE], sensor_array[HUMIDITY]);	// Send temperature and humidity readings to the esp8266 (converts double to string).
 
-	update_oled(sensor_array[TEMPERATURE], sensor_array[HUMIDITY]);	// Update the oled display with the latest  temperature and humidity readings.
+	update_oled(sensor_array[TEMPERATURE], sensor_array[HUMIDITY]);	// Update the oled display with the latest temperature and humidity readings.
 }
 

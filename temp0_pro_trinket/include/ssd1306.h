@@ -51,16 +51,15 @@
 #define OLED_ADDRESS_COLUMN				0x21	// (Horizontal Mode) Following two bytes set start and end columns 0 to 127.  Default 0 then 127.
 #define OLED_ADDRESS_PAGE				0x22	// (Horizontal Mode) Following two bytes set start and end pages 0 to 7.  Default 0 then 7.
 
-// Define class for an oled display with onboard ssd1306 driver..
+// Define class for an oled display with onboard ssd1306 driver.
 class ssd1306
 {
 	public:
 		ssd1306();
 		void init();
-		void clear_screen(void);
 		void invert_screen(bool invert);
 		void draw_box(uint8_t start_page, uint8_t start_column, uint8_t height, uint8_t width);
-		void map_bits(const uint8_t *bitmap);
+		void map_bits(const uint8_t *bitmap, const uint16_t bitmap_size);
 		void test_pattern(void);
 		void print_char(unsigned char character, const uint8_t *font, uint8_t start_page, uint8_t start_column);
 		void print_string(unsigned char *string, const uint8_t *font, uint8_t start_page, uint8_t start_column);
@@ -75,18 +74,3 @@ class ssd1306
 		void send_data(uint8_t data);
 		void send_segment(uint8_t byte, uint8_t page, uint8_t column);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

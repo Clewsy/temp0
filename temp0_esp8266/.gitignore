@@ -3,3 +3,6 @@
 
 #Don't push wifi essid credentials
 include/credentials.h
+#credentials.h would likely take the following format.
+#define STASSID	"your-ssid"
+#define STAPSK	"your-password"

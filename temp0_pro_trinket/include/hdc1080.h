@@ -21,8 +21,7 @@
 
 #define HDC1080_SENSE_DELAY 7	// Delay (in ms) to wait after triggering an update of hdc1080 sensor data, before reading in the data.  Refer to datasheet.
 
-#define TEMP_BODGE -4		// Bodge factor to adjust the temperature - allow for offset due to local ambient conditions.S
-
+#define TEMP_BODGE -4		// Bodge factor to adjust the temperature - allow for offset due to local ambient conditions.
 
 // Define class for an hdc1080 temperature/humidity sensor.
 class hdc1080
@@ -30,7 +29,7 @@ class hdc1080
 	public:
 		hdc1080(void);				// To initialise an hdc1080 sensor.
 		void init(void);			// Initialise an hdc1080.
-		double * get_sensor_data(void);		// Get the temperature and humidty readings from an hdc1080.
+		double *get_sensor_data(void);		// Get the temperature and humidty readings from an hdc1080.
 		void run_heater(uint8_t seconds);	// Run the internal sensor heater for a specified duration.
 	
 	private:

@@ -67,7 +67,7 @@ void ssd1306::send_segment(uint8_t byte, uint8_t page, uint8_t column)
 {
 	// Don't bother sending data if the address is out-of-bounds.
 	// Note, page & column are 8-bit unsigned.  Rolling over from 255->0 will be sent.
-	if ( (page < 8) && (column < 128) )
+	if((page < 8) && (column < 128))
 	{
 		set_address(page, column);
 		send_data(byte);
@@ -100,28 +100,7 @@ void ssd1306::init(void)
 	send_command(OLED_SET_CHARGE_PUMP, OLED_SET_CHARGE_PUMP_DEFAULT);				// Enable charge pump regulator.
 	send_command(OLED_SET_PRECHARGE_PERIOD, OLED_SET_PRECHARGE_PERIOD_DEFAULT);			// Set charge pump pre-charge period.
 	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Set memory addressing mode to Page Addressing Mode.
-	clear_screen();											// Clear any remnant screen memory from last run.
 	send_command(OLED_ON);										// Turn display on.
-}
-
-// Write all zeros to oled data to clear all pixels.
-void ssd1306::clear_screen(void)
-{
-	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_HORIZONTAL);	// Temporarily set memory addressing mode to Horizontal Mode.
-	send_command(OLED_ADDRESS_PAGE, 0, 7);								// Set page address range.
-	send_command(OLED_ADDRESS_COLUMN, 0, 127);							// Set column address range.
-	
-	for (uint8_t i=0; i<64; i++)	// Can send packets of maximum 16 bytes at a time.  Therefore need to repeat 64 times for all segments.
-	{
-		Wire.beginTransmission(OLED_ADDR);
-		Wire.write(OLED_CONTROL_BYTE_BULK_DATA);
-		for (uint8_t j=0; j<16; j++)
-		{
-			Wire.write(0x00);			// Segment index increases every write.
-		}
-		Wire.endTransmission(OLED_ADDR);
-	}
-	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Reset memory addressing mode back to Page Mode.
 }
 
 // Sending true or a one to this function will cause the display to be inverted.  False or a zero will revert the display to normal/non-inverted.
@@ -134,30 +113,30 @@ void ssd1306::invert_screen(bool invert)
 // with dimensions [width] pixels wide by [height]x8 pixels height (i.e. height is in incrments of page = 8-bits).
 void ssd1306::draw_box(uint8_t start_page, uint8_t start_column, uint8_t height, uint8_t width)
 {
-	send_segment(0xFF, start_page, start_column);				// Location of top left box corner.
+	send_segment(0xFF, start_page, start_column);					// Location of top left box corner.
 
-	for(uint8_t c = start_column; c < (start_column+width-2); c++)		// Run through top row first page for all columns.
+	for(uint8_t c = start_column; c < (start_column + width - 2); c++)		// Run through top row first page for all columns.
 	{
-		if(height>1)	{send_data(0b00000001);}			// Top row only.
-		else		{send_data(0b10000001);}			// Top and bottom rows (box is a single page in height).
+		if(height > 1)	send_data(0b00000001);					// Top row only.
+		else		send_data(0b10000001);					// Top and bottom rows (box is a single page in height).
 	}
 
-	send_data(0xFF);							// Right most column, first page.
+	send_data(0xFF);								// Right-most column, first page.
 
-	if(height>1)								// Box is more than a single page in height.
+	if(height > 1)									// Box is more than a single page in height.
 	{
-		for(uint8_t p = (start_page+1); p < (start_page + height); p++)	// Run through left- and right-most column for all pages between first and last.
+		for(uint8_t p = (start_page+ 1 ); p < (start_page + height); p++)	// Run through left- and right-most column, all pages between first and last.
 		{
-			send_segment(0xFF, p, start_column);			// Left column.
-			send_segment(0xFF, p, (start_column+width-1));		// Right column
+			send_segment(0xFF, p, start_column);				// Left column.
+			send_segment(0xFF, p, (start_column + width - 1));		// Right column
 		}
 
-		send_segment(0xFF, (start_page+height-1), (start_column));	// Location of bottom left box corner.
-		for(uint8_t c = start_column; c < (start_column+width-2); c++)	// Run through bottom row last page for all columns.
+		send_segment(0xFF, (start_page + height - 1), start_column);		// Location of bottom left box corner.
+		for(uint8_t c = start_column; c < (start_column + width - 2); c++)	// Run through bottom row last page for all columns.
 		{
-			send_data(0b10000000);					// Bottom row only.
+			send_data(0b10000000);						// Bottom row only.
 		}
-		send_data(0xFF);						// Right most column, last page. 
+		send_data(0xFF);							// Right-most column, last page. 
 	}
 }
 
@@ -168,16 +147,16 @@ void ssd1306::test_pattern(void)
 	send_command(OLED_ADDRESS_PAGE, 0, 7);								// Set page address range.
 	send_command(OLED_ADDRESS_COLUMN, 0, 127);							// Set column address range.
 	
-	for (uint8_t i=0; i<64; i++)	// Can send packets of maximum 16 bytes at a time.  Therefore need to repeat 64 times for all segments.
+	for (uint8_t i = 0; i < 64; i++)	// Can send packets of maximum 16 bytes at a time.  Therefore need to repeat 64 times for all segments.
 	{
 		Wire.beginTransmission(OLED_ADDR);
 		Wire.write(OLED_CONTROL_BYTE_BULK_DATA);
-		for (uint8_t j=0; j<16; j++)
+		for (uint8_t j = 0; j < 16; j++)
 		{
 			Wire.write(0b11110000);		// Segment index increases every write.
 		}
 		Wire.endTransmission(OLED_ADDR);
-		delay(10);				// Delay for dramatic effect.
+		delay(20);				// Delay for dramatic effect.
 	}
 	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Reset memory addressing mode back to Page Mode.
 }
@@ -201,23 +180,23 @@ void ssd1306::print_char(unsigned char character, const uint8_t *font, uint8_t s
 	//	character-font_first_char : convert the char value to the character index number.  E.g. for char '!', 0x21-0x20=0x01, therefore second character in index (0x00 is first).
 	//	*4 : Each character has four metadata bytes, so want to skip over 4*character index bytes to get to the metadata for the current character.
 	//	+ CHAR_ADDR_MSB : Within the character metadata, the MSB of the address is at index CHAR_ADDR_MSB.
-	uint16_t char_data_addr =	( (pgm_read_byte(&font[FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_ADDR_MSB]) ) << 8	) +	// Character index MSB shifted left 8 bits +
-					( (pgm_read_byte(&font[FIRST_CHAR_META + ((character-font_first_char) * 4) + CHAR_ADDR_LSB]) )		) +	// Character index LSB +
+	uint16_t char_data_addr =	( (pgm_read_byte(&font[FIRST_CHAR_META + ((character - font_first_char) * 4) + CHAR_ADDR_MSB]) ) << 8	) +	// Character index MSB shifted left 8 bits +
+					( (pgm_read_byte(&font[FIRST_CHAR_META + ((character - font_first_char) * 4) + CHAR_ADDR_LSB]) )	) +	// Character index LSB +
 					( FIRST_CHAR_META + (font_num_chars * 4 ) );									// Number of bytes used by font and character metadata.
 
 	// From the char metadata, obtain the number of data bytes used to define the char.
 	uint8_t char_data_size = pgm_read_byte(&font[	FIRST_CHAR_META +			// Start at first character metadata byte.
-							((character-font_first_char) * 4) +	// Skip to the metadatabytes for the current character.
+							((character - font_first_char) * 4) +	// Skip to the metadatabytes for the current character.
 							CHAR_BYTE_SIZE ]);			// Skip to the metadata byte that represents number of char data bytes.
 
 	// From the char metadata, obtain the char width in pixels. 
 	uint8_t char_width = pgm_read_byte(&font[	FIRST_CHAR_META +			// Start at first character metadata byte.
-							((character-font_first_char) * 4) +	// Skip to the metadatabytes for the current character.
+							((character - font_first_char) * 4) +	// Skip to the metadatabytes for the current character.
 							CHAR_WIDTH ]);				// Skip to the metadata byte that represents char width.
 
 	// Determine the minimum number of pages needed to display the full height of the character - pages are 8 pixels tall.
 	uint8_t char_pages;
-	if (font_height % 8)	{char_pages = ((font_height+(8-(font_height % 8))) / 8);}	// Height in pixels is not a multiple of 8.
+	if(font_height % 8)	{char_pages = ((font_height + (8 - (font_height % 8))) / 8);}	// Height in pixels is not a multiple of 8.
 	else			{char_pages = (font_height / 8);}				// Height in pixels is a multiple of 8.
 
 	// Run through each of the bytes of character data and send to the correct segment address.
@@ -255,29 +234,49 @@ void ssd1306::print_string(unsigned char *string, const uint8_t *font, uint8_t s
 	{
 		// From the character metadata, determine width in pixels of the current char.
 		uint8_t current_char_width = pgm_read_byte(&font[	FIRST_CHAR_META +				// Start at first character metadata byte.
-									((string[character]-font_first_char) * 4) +	// Skip to the metadatabytes for the current character.
+									((string[character] - font_first_char) * 4) +	// Skip to the metadatabytes for the current character.
 									CHAR_WIDTH ]);					// Skip to the metadata byte that represents character width.
 
 		print_char(string[character], font, start_page, column);	// Print the current character to the oled.
 
-		column+=current_char_width;					// Increment the column index by the width of the character.
+		column += current_char_width;					// Increment the column index by the width of the character.
 
 		character++;							// Increment to the next character in the string.
 	}
 }
 
-
-// Print a full-resolution (128x64) image to screen..
-void ssd1306::map_bits(const uint8_t *bitmap)
+// Print a full-resolution (128x64) image to screen.
+void ssd1306::map_bits(const uint8_t *bitmap, const uint16_t bitmap_size)
 {
 	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_HORIZONTAL);	// Temporarily set memory addressing mode to Horizontal Mode.
 	send_command(OLED_ADDRESS_PAGE, 0, 7);								// Set page address range.
 	send_command(OLED_ADDRESS_COLUMN, 0, 127);							// Set column address range.
-	
-	for (uint16_t i=0; i<1024; i++)	// In hotizontal addressing mode, each segment write increments the write address from top left to bottom right..
+
+	uint16_t seg = 0;		// seg will increment for every segment sent to the OLED.
+	while(seg < bitmap_size)	// Send every segment in the bitmap.
 	{
-		send_data(pgm_read_byte(&bitmap[i]));
+		if(!(seg % 16))	// Can send bulk packets of maximum 16 bytes at a time.  Therefore need to restart every 16 transmissions.
+		{
+			Wire.endTransmission(OLED_ADDR);
+			Wire.beginTransmission(OLED_ADDR);
+			Wire.write(OLED_CONTROL_BYTE_BULK_DATA);
+		}
+		Wire.write(pgm_read_byte(&bitmap[seg]));	// Bitmap address increments 16 times in j loop, 64 times in i loop, total 1024 bytes.
+		seg++;
 	}
+	while(seg < 1024)	// Bitmap may have had fewer than the total 1024 bytes so the rest should be zeros.
+	{
+		if(!(seg % 16))	// Can send bulk packets of maximum 16 bytes at a time.  Therefore need to restart every 16 transmissions.
+		{
+			Wire.endTransmission(OLED_ADDR);
+			Wire.beginTransmission(OLED_ADDR);
+			Wire.write(OLED_CONTROL_BYTE_BULK_DATA);
+		}
+		Wire.write(0x00);	// Just send zeros (blank segments).
+		seg++;
+	}
+
+	Wire.endTransmission(OLED_ADDR);
 
 	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Reset memory addressing mode back to Page Mode.
 }

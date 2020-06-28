@@ -22,8 +22,6 @@
 #define LED_EXTERNAL	6	// LED connected to this pin.  On Pro-Trinket, this pin has analog out capability.
 #define LED_PULSE_SPEED	1	// Increment size for increasing/decreasing led brightness.
 #define LED_MAX_VALUE	20	// Maximum brightness value of external LED (analogue out 0 to 255).
-#define LED_ON
-#define LED_OFF
 
 // Global variables.
 hdc1080 sensor;			// Initialise an hdc1080 sensor called "sensor".  Refer "hdc1080.h".

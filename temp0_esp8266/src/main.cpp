@@ -8,7 +8,7 @@ String get_temp()
 {
 	Serial.find('t');				// Character 't' indicates beginning of the serial string indicating the temperature value.
 	String temp = Serial.readStringUntil(';');	// Character ';' indicates end of the temp string.
-	if(temp == "")	{ temp = "error"; }		// Will print "error" if the esp8266 is not receiving the serial string.
+	if(temp == "")	temp = "error";			// Will print "error" if the esp8266 is not receiving the serial string.
 	return temp;
 }
 
@@ -17,7 +17,7 @@ String get_humi()
 {
 	Serial.find('h');				// Character 'h' indicates beginning of the serial string indicating the humidity value.
 	String humi = Serial.readStringUntil(';');	// Character ';' indicates end of the humi string.
-	if(humi == "")	{ humi = "error"; }		// Will print "error" if the esp8266 is not receiving the serial string.
+	if(humi == "")	humi = "error";			// Will print "error" if the esp8266 is not receiving the serial string.
 	return humi;
 }
 
@@ -135,7 +135,7 @@ void setup(void)
 	WiFi.begin(ssid, password);
 
 	// Wait for connection
-	while (WiFi.status() != WL_CONNECTED) { delay(500); }
+	while (WiFi.status() != WL_CONNECTED) delay(500);
 
 	// Define functions to call depending on full url address.
 	server.on("/", handle_root);
