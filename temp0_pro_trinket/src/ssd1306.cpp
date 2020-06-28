@@ -196,8 +196,8 @@ void ssd1306::print_char(unsigned char character, const uint8_t *font, uint8_t s
 
 	// Determine the minimum number of pages needed to display the full height of the character - pages are 8 pixels tall.
 	uint8_t char_pages;
-	if(font_height % 8)	{char_pages = ((font_height + (8 - (font_height % 8))) / 8);}	// Height in pixels is not a multiple of 8.
-	else			{char_pages = (font_height / 8);}				// Height in pixels is a multiple of 8.
+	if(font_height % 8)	char_pages = ((font_height + (8 - (font_height % 8))) / 8);	// Height in pixels is not a multiple of 8.
+	else			char_pages = (font_height / 8);					// Height in pixels is a multiple of 8.
 
 	// Run through each of the bytes of character data and send to the correct segment address.
 	//	Page address : start_page + (b % char_pages)		: Starting from the top page, move down with each increment for the number of pages needed (char_pages), then roll back to the top page.
@@ -226,8 +226,7 @@ void ssd1306::print_char(unsigned char character, const uint8_t *font, uint8_t s
 void ssd1306::print_string(unsigned char *string, const uint8_t *font, uint8_t start_page, uint8_t start_column)
 {
 	uint8_t font_first_char = pgm_read_byte(&font[FONT_FIRST_CHAR]);	// From the font metadata obtain the value of the first included character (often ' ' (i.e. space) or 0x20).
-
-	uint8_t column = start_column;	// Initialise the working column - starts at start_column.
+	uint8_t column = start_column;						// Initialise the working column - starts at start_column.
 
 	uint8_t character = 0;		// Initialise the character index to be used in the character array.	
 	while(string[character])	// Repeat the while loop until "character" is incremented to the end of the string.
@@ -237,11 +236,9 @@ void ssd1306::print_string(unsigned char *string, const uint8_t *font, uint8_t s
 									((string[character] - font_first_char) * 4) +	// Skip to the metadatabytes for the current character.
 									CHAR_WIDTH ]);					// Skip to the metadata byte that represents character width.
 
-		print_char(string[character], font, start_page, column);	// Print the current character to the oled.
-
-		column += current_char_width;					// Increment the column index by the width of the character.
-
-		character++;							// Increment to the next character in the string.
+		print_char(string[character], font, start_page, column);						// Print the current character to the oled.
+		column += current_char_width;										// Increment the column index by the width of the character.
+		character++;												// Increment to the next character in the string.
 	}
 }
 
@@ -275,7 +272,6 @@ void ssd1306::map_bits(const uint8_t *bitmap, const uint16_t bitmap_size)
 		Wire.write(0x00);	// Just send zeros (blank segments).
 		seg++;
 	}
-
 	Wire.endTransmission(OLED_ADDR);
 
 	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Reset memory addressing mode back to Page Mode.
