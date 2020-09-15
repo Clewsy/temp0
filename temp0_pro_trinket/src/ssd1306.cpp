@@ -116,22 +116,22 @@ void ssd1306::invert_screen(bool invert)
 // width:	1 to 128 pixels.
 void ssd1306::draw_box(uint8_t start_row, uint8_t start_column, uint8_t height, uint8_t width)
 {
-	uint8_t start_page = (start_row / 8);	// Addressing is done by (page, column), so calculate the first page from the start row.
+	uint8_t start_page = (start_row / 8);				// Addressing is done by (page, column), so calculate the first page from the start row.
 	uint8_t num_pages = ((((start_row % 8) + height - 1) / 8) + 1);	// The number of pages spanned by the box.
 
-	uint8_t empty_rows_in_top_page = (start_row % 8);
-	uint8_t empty_rows_in_bottom_page = (8 - (height - ((num_pages - 2) * 8) - (8 - empty_rows_in_top_page)));
+	uint8_t empty_rows_in_top_page = (start_row % 8);								// For left-shifting top row segments.
+	uint8_t empty_rows_in_bottom_page = (8 - (height - ((num_pages - 2) * 8) - (8 - empty_rows_in_top_page)));	// For right-shifting bottom row segments.
 
 	set_address(start_page, start_column);	// Set address for the first segment.
 
 	if(num_pages > 1)	// Boxes that span more than one page.
 	{
-		send_data(0xFF << empty_rows_in_top_page);						// Top left box segment.
+		send_data(0xFF << empty_rows_in_top_page);					// Top left box segment.
 		for(uint8_t c = (start_column + 1); c < (start_column + width - 1); c++)	// Cycle through columns for box top row.
 		{
 			send_data(0x01 << empty_rows_in_top_page);
 		}
-		send_data(0xFF << empty_rows_in_top_page);						// Top right box segment.
+		send_data(0xFF << empty_rows_in_top_page);					// Top right box segment.
 		for(uint8_t p = (start_page + 1); p < (start_page + num_pages - 1); p++)	// Cycle through pages between top and bottom page.
 		{
 			set_address(p, start_column);
@@ -140,24 +140,23 @@ void ssd1306::draw_box(uint8_t start_row, uint8_t start_column, uint8_t height, 
 			send_data(0xFF);							// Right side box segments.
 		}
 		set_address((start_page + num_pages - 1), start_column);
-		send_data(0xFF >> empty_rows_in_bottom_page);						// Bottom left box segment.
+		send_data(0xFF >> empty_rows_in_bottom_page);					// Bottom left box segment.
 		for(uint8_t c = (start_column + 1); c < (start_column + width - 1); c++)	// Cycle through columns for box bottom row.
 		{
 			send_data(0x80 >> empty_rows_in_bottom_page);
 		}
-		send_data(0xFF >> empty_rows_in_bottom_page);						// Bottom right box segment.
+		send_data(0xFF >> empty_rows_in_bottom_page);					// Bottom right box segment.
 	}
 	else	// Boxes that fit within a single page.
 	{
-		send_data((0xFF >> (8 - height)) << (start_row % 8));				// Left box segment.
+		send_data((0xFF >> (8 - height)) << empty_rows_in_top_page);			// Left box segment.
 		for(uint8_t c = (start_column + 1); c < (start_column + width - 1); c++)	// Cycle through for box top and bottom rows.
 		{
-			send_data(((0x01 << (height - 1)) + 1) << (start_row % 8));
+			send_data(((0x01 << (height - 1)) + 1) << empty_rows_in_top_page);
 		}
-		send_data((0xFF >> (8 - height)) << (start_row % 8));				// Right box segment.
+		send_data((0xFF >> (8 - height)) << empty_rows_in_top_page);			// Right box segment.
 	}
 }
-
 
 // Print a test pattern to the display.
 void ssd1306::test_pattern(void)
