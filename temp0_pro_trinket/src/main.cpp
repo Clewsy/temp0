@@ -103,14 +103,6 @@ void update_oled (double temp, double humi)
 			display.print_string((unsigned char*)temp_string, Roboto_Black_26, 2, 16);	// |         |
 			break;										// | 12.34°C |
 													// |_________|
-		case MODE_LOGO_CLEWS:			// No data readout, just show clews logo.
-		case MODE_LOGO_CLEWS_INVERSE:
-			display.map_bits(LOGO_CLEWS, sizeof(LOGO_CLEWS));
-			break;
-		case MODE_LOGO_HAD:			// No data readout, just show HackADay logo.
-		case MODE_LOGO_HAD_INVERSE:
-			display.map_bits(LOGO_HAD, sizeof(LOGO_HAD));
-			break;
 		case MODE_BLANK:			// Blank screen.
 			display.map_bits(BLANK, sizeof(BLANK));
 	}
@@ -123,10 +115,8 @@ void splash_screen(void)
 	delay(750);
 	display.map_bits(LOGO_HAD, sizeof(LOGO_HAD));
 	delay(750);
-	display.test_pattern();
-	delay(250);
 	display.map_bits(BLANK, sizeof(BLANK));
-	display.draw_box(0, 0, 8, 128);
+	display.draw_box(0, 0, 64, 128);
 	display.print_string((unsigned char*)"temp0", Roboto_Black_12, 3, 45);
 }
 

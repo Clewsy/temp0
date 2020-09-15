@@ -9,5 +9,9 @@
 			"path": "./temp0_pro_trinket"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"random": "cpp"
+		}
+	}
 }
