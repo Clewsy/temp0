@@ -1,10 +1,5 @@
 #include "hdc1080.h"
 
-hdc1080::hdc1080(void)
-{
-//	Wire.begin();	// Communicating with the hdc1080 requires I2C.  Not needed here as wire is initialised in main.
-}
-
 // Read the current configuration register value.  Returns 8-bit integer representing current register state.
 // Note, configuration register is actually 16 bits, but the lower 7 bits are all reserved (zero).
 uint8_t hdc1080::read_config_register(void)

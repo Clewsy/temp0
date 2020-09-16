@@ -27,7 +27,6 @@
 class hdc1080
 {
 	public:
-		hdc1080(void);				// To initialise an hdc1080 sensor.
 		void init(void);			// Initialise an hdc1080.
 		double *get_sensor_data(void);		// Get the temperature and humidty readings from an hdc1080.
 		void run_heater(uint8_t seconds);	// Run the internal sensor heater for a specified duration.

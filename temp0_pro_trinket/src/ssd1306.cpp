@@ -76,12 +76,6 @@ void ssd1306::send_segment(uint8_t byte, uint8_t page, uint8_t column)
 
 /////////////////////////////////////// Begin public functions
 
-// Define an oled module.
-ssd1306::ssd1306(void)
-{
-//	Wire.begin();	// Communicating with the ssd1306 requires I2C.  Not needed here as wire is initialised in main.
-}
-
 // Initialise the oled display.
 void ssd1306::init(void)
 {

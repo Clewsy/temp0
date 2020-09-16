@@ -1,5 +1,10 @@
 #include "temp0.h"
 
+// Global variables.
+hdc1080 sensor;		// Initialise an hdc1080 sensor called "sensor".  Refer "hdc1080.h".
+ssd1306 display;	// Initialise an oled display with ssd1306 driver called "display".  Refer "ssd1306.h"
+
+
 // Configure the timer interrupt (for LED pulsing).
 void led_pulse_init(void)
 {
@@ -26,7 +31,7 @@ ISR(TIMER2_OVF_vect)
 	analogWrite(LED_EXTERNAL, led_value);									// Update the brightness of the external led.
 }
 
-// Interrupr sub-routine that is triggered by pressing the push-button.
+// Interrupt sub-routine that is triggered by pressing the push-button.
 void ISR_button(void)
 {
 	// Button debounce.
@@ -80,7 +85,7 @@ void update_oled (double temp, double humi)
 	}
 
 	// Alternating display modes are inverted.
-	display.invert_screen(mode & 0b00000001);	// I.e. Inverse enabled by lsb of mode byte.
+	display.invert_screen(mode & 1);	// I.e. Inverse enabled by lsb of mode byte.
 
 	switch(mode)
 	{
@@ -103,7 +108,7 @@ void update_oled (double temp, double humi)
 			display.print_string((unsigned char*)temp_string, Roboto_Black_26, 2, 16);	// |         |
 			break;										// | 12.34°C |
 													// |_________|
-		case MODE_BLANK:			// Blank screen.
+		case MODE_BLANK:				// Blank screen.
 			display.map_bits(BLANK, sizeof(BLANK));
 	}
 }
@@ -112,9 +117,9 @@ void update_oled (double temp, double humi)
 void splash_screen(void)
 {
 	display.map_bits(LOGO_CLEWS, sizeof(LOGO_CLEWS));
-	delay(750);
+	delay(500);
 	display.map_bits(LOGO_HAD, sizeof(LOGO_HAD));
-	delay(750);
+	delay(500);
 	display.map_bits(BLANK, sizeof(BLANK));
 	display.draw_box(0, 0, 64, 128);
 	display.print_string((unsigned char*)"temp0", Roboto_Black_12, 3, 45);
@@ -137,11 +142,9 @@ void setup(void)
 	Wire.setClock(400000);	//Default is 100kHz but devices in this system are capable of 400kHz.
 
 	// Initialise sensor using the hdc1080 header and functions.
-	sensor = hdc1080();
 	sensor.init();
 
 	// Initialise oled using the ssd1306 header and functions.
-	display = ssd1306();
 	display.init();
 
 	// Display start-up animation.

@@ -55,8 +55,7 @@
 class ssd1306
 {
 	public:
-		ssd1306();
-		void init();
+		void init(void);
 		void invert_screen(bool invert);
 		void draw_box(uint8_t start_page, uint8_t start_column, uint8_t height, uint8_t width);
 		void map_bits(const uint8_t *bitmap, const uint16_t bitmap_size);
