@@ -84,7 +84,7 @@ This repo contains:
 [link_web_hackaday_pro_trinket]:https://hackaday.com/2014/10/10/10th-anniversary-trinket-pro-now-in-the-hackaday-store/
 [link_web_home_assistant]:https://www.home-assistant.io/
 [link_web_jlcpcb]:https://jlcpcb.com/
-[link_web_kicad]:https://kicad-pcb.org/
+[link_web_kicad]:https://kicad.org/
 [link_web_platformio]:https://platformio.org/
 [link_web_vscode]:https://code.visualstudio.com/
 
