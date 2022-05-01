@@ -122,17 +122,12 @@ void handle_not_found()
 // System initialisation.
 void setup(void)
 {
-	// Initialise credential strings.
-	const char* ssid = STASSID;
-	const char* password = STAPSK;
-
 	// Initialise uart.
 	Serial.begin(115200);
 
 	// Initialise wifi station.
 	WiFi.hostname(HOSTNAME);
-	WiFi.mode(WIFI_STA);
-	WiFi.begin(ssid, password);
+	WiFi.begin(STASSID, STAPSK);
 
 	// Wait for connection
 	while (WiFi.status() != WL_CONNECTED) delay(500);
