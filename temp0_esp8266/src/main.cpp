@@ -6,7 +6,7 @@ ESP8266WebServer server(80);
 // Parse the temperature value (in plain text) from the serial string.
 String get_temp()
 {
-	Serial.find('t');				// Character 't' indicates beginning of the serial string indicating the temperature value.
+	Serial.find('t');				// Character 't' indicates start of serial string with temperature value.
 	String temp = Serial.readStringUntil(';');	// Character ';' indicates end of the temp string.
 	if(temp == "")	temp = "error";			// Will print "error" if the esp8266 is not receiving the serial string.
 	return temp;
@@ -15,7 +15,7 @@ String get_temp()
 // Parse the humidity value (in plain text) from the serial string.
 String get_humi()
 {
-	Serial.find('h');				// Character 'h' indicates beginning of the serial string indicating the humidity value.
+	Serial.find('h');				// Character 'h' indicates start of serial string with humidity value.
 	String humi = Serial.readStringUntil(';');	// Character ';' indicates end of the humi string.
 	if(humi == "")	humi = "error";			// Will print "error" if the esp8266 is not receiving the serial string.
 	return humi;
@@ -104,7 +104,7 @@ void handle_root()
 // Basic default page output.
 void handle_not_found()
 {
-	String message = "File Not Found\n\n";
+	String message = "jolly roger sends his regards\n\n";
 	message += "URI: ";
 	message += server.uri();
 	message += "\nMethod: ";
